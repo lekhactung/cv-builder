@@ -43,7 +43,7 @@ export default function Header() {
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
 
               {/* Nút Dashboard nhanh */}
-              <Link href="/dashboard" className="btn-nav-ghost">Dashboard</Link>
+              {/* <Link href="/dashboard" className="btn-nav-ghost">Dashboard</Link> */}
 
               {/* Khu vực Avatar và Dropdown */}
               <div style={{ position: "relative" }}>
@@ -57,8 +57,8 @@ export default function Header() {
                     <img
                       src={session.user.image}
                       alt={session.user.name ?? "Avatar"}
-                      width={36}
-                      height={36}
+                      width={34}
+                      height={34}
                       style={{ borderRadius: "50%", border: "2px solid var(--accent-primary)", objectFit: "cover" }}
                     />
                   ) : (
@@ -114,7 +114,7 @@ export default function Header() {
                         onMouseEnter={(e) => e.currentTarget.style.background = "#2e2e38"}
                         onMouseLeave={(e) => e.currentTarget.style.background = "none"}
                       >
-                        📊 Dashboard
+                        Dashboard
                       </Link>
 
                       <Link
@@ -124,7 +124,7 @@ export default function Header() {
                         onMouseEnter={(e) => e.currentTarget.style.background = "#2e2e38"}
                         onMouseLeave={(e) => e.currentTarget.style.background = "none"}
                       >
-                        ⚙️ Cài đặt tài khoản
+                        Cài đặt tài khoản
                       </Link>
 
                       {/* Đường phân cách */}
@@ -140,7 +140,7 @@ export default function Header() {
                         onMouseEnter={(e) => e.currentTarget.style.background = "#2e2e38"}
                         onMouseLeave={(e) => e.currentTarget.style.background = "none"}
                       >
-                        🚪 Đăng xuất
+                        Đăng xuất
                       </button>
                     </div>
                   </>
