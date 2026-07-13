@@ -4,36 +4,30 @@ import Link from "next/link";
 import StatCard from "@/components/dashboard/StatCard";
 import CvCard from "@/components/dashboard/CvCard";
 import EmptyState from "@/components/dashboard/EmptyState";
+import { FileText, Activity } from "lucide-react";
 
 export default async function DashboardPage() {
   const session = await auth();
   const userId = session!.user!.id;
 
-  const cvs: any[] = []; 
-
+  const cvs = await prisma.cV.findMany({
+    where: { userId },
+    orderBy: { updatedAt: "desc" },
+  });
   const stats = [
     {
       label: "Tổng CV",
       value: cvs.length,
       color: "primary" as const,
       description: "CV đã tạo",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-          <polyline points="14 2 14 8 20 8" />
-        </svg>
-      ),
+      icon: <FileText size={20} strokeWidth={2} />,
     },
     {
       label: "ATS Score",
       value: "-",
       color: "success" as const,
       description: "Cần tạo CV để xem",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-        </svg>
-      ),
+      icon: <Activity size={20} strokeWidth={2} />,
     },
   ];
 
@@ -49,9 +43,18 @@ export default async function DashboardPage() {
             Quản lý và tạo CV chuyên nghiệp của bạn
           </p>
         </div>
-        <Link href="/editor/new" className="btn btn-primary btn-md">
-          + Tạo CV mới
-        </Link>
+        <form action={async () => {
+          "use server";
+          const { createCvAction } = await import("@/lib/actions/cv");
+          const { redirect } = await import("next/navigation");
+
+          const newCvId = await createCvAction();
+          redirect(`/editor/${newCvId}`);
+        }}>
+          <button type="submit" className="btn btn-primary btn-md">
+            + Tạo CV mới
+          </button>
+        </form>
       </div>
 
       {/* Stats */}
