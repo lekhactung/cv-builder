@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     } catch(error){
         console.error("[REGISTER_ERROR]", error);
         return NextResponse.json(
-            {error: "Lỗi serve, vui lòng thử lại"},
+            {error: "Lỗi server, vui lòng thử lại"},
             {status : 500}
         )
     }
