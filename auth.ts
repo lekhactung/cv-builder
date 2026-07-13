@@ -6,11 +6,11 @@ import bcrypt from "bcryptjs"
 import { z } from "zod"
 import Google from "next-auth/providers/google"
 
-// const ACCESS_TOKEN_EXPIRES_IN = 15 * 60      
-const ACCESS_TOKEN_EXPIRES_IN = 60      
+const ACCESS_TOKEN_EXPIRES_IN = 15 * 60      
+// const ACCESS_TOKEN_EXPIRES_IN = 15
 
-// const REFRESH_TOKEN_EXPIRES_IN = 7 * 24 * 60 * 60 
-const REFRESH_TOKEN_EXPIRES_IN = 5 * 60
+const REFRESH_TOKEN_EXPIRES_IN = 7 * 24 * 60 * 60 
+// const REFRESH_TOKEN_EXPIRES_IN = 5 * 60
 
 declare module "next-auth" {
     interface Session {
@@ -36,24 +36,20 @@ const loginSchema = z.object({
 async function refreshAccessToken(token: any) {
     try {
         if (Date.now() > token.refreshTokenExpires) {
-            console.log("[AUTH] Refresh token đã hết hạn → Buộc đăng xuất")
             return { ...token, error: "RefreshTokenExpired" }
         }
 
         const user = await prisma.user.findUnique({ where: { id: token.id } })
         if (!user) {
-            console.log("[AUTH] User không còn tồn tại → Buộc đăng xuất")
             return { ...token, error: "RefreshTokenExpired" }
         }
 
-        console.log("[AUTH] Access token đã được làm mới thành công")
         return {
             ...token,
             accessTokenExpires: Date.now() + ACCESS_TOKEN_EXPIRES_IN * 1000,
             error: undefined,
         }
     } catch (err) {
-        console.error("[AUTH] Lỗi khi refresh token:", err)
         return { ...token, error: "RefreshTokenExpired" }
     }
 }
@@ -113,7 +109,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         async jwt({ token, user }) {
             if (user) {
-                console.log("[AUTH] Đăng nhập lần đầu → Tạo token mới")
                 return {
                     ...token,
                     id: user.id as string,
@@ -126,8 +121,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             if (Date.now() < token.accessTokenExpires) {
                 return token
             }
-
-            console.log("[AUTH] Access token hết hạn → Đang refresh...")
             return await refreshAccessToken(token)
         },
 
