@@ -15,6 +15,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   sessions      Session[]
+  cvs           CV[]
 }
 model Account {
   id                String  @id @default(cuid())
@@ -44,4 +45,14 @@ model VerificationToken {
   token      String   @unique
   expires    DateTime
   @@unique([identifier, token])
+}
+model CV {
+  id        String   @id @default(cuid())
+  title     String   @default("CV Không Tiêu Đề")
+  template  String   @default("Modern")
+  data      Json     @default("{}")
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
