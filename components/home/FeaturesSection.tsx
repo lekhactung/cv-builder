@@ -1,3 +1,5 @@
+import { Target, FileEdit, Sparkles, Search, Palette, FileText, DownloadCloud } from "lucide-react";
+
 export default function FeaturesSection() {
   return (
     <section className="features-section" id="features">
@@ -15,7 +17,9 @@ export default function FeaturesSection() {
           {/* ATS Score Engine — large card */}
           <div className="feature-card feature-card-lg" id="feature-ats">
             <div className="feature-icon-wrap">
-              <div className="feature-icon">🎯</div>
+              <div className="feature-icon">
+                <Target size={28} className="text-primary" />
+              </div>
             </div>
             <h3>ATS Score Engine</h3>
             <p>
@@ -45,7 +49,9 @@ export default function FeaturesSection() {
 
           {/* AI Rewrite */}
           <div className="feature-card" id="feature-rewrite">
-            <div className="feature-icon">✍️</div>
+            <div className="feature-icon">
+              <FileEdit size={28} className="text-primary" />
+            </div>
             <h3>AI Rewrite</h3>
             <p>Biến bullet points nhàm chán thành câu mạnh mẽ với action verbs và số liệu cụ thể.</p>
             <div className="rewrite-demo">
@@ -55,7 +61,9 @@ export default function FeaturesSection() {
               </div>
               <div className="rewrite-arrow">→</div>
               <div className="rewrite-after">
-                <span className="rewrite-label rewrite-label-after">Sau AI ✨</span>
+                <span className="rewrite-label rewrite-label-after">
+                  Sau AI <Sparkles size={14} className="inline-block ml-1" />
+                </span>
                 <p>&quot;Led cross-functional team of 8, delivering 3 products on time&quot;</p>
               </div>
             </div>
@@ -63,7 +71,9 @@ export default function FeaturesSection() {
 
           {/* Job Match */}
           <div className="feature-card" id="feature-match">
-            <div className="feature-icon">🔍</div>
+            <div className="feature-icon">
+              <Search size={28} className="text-primary" />
+            </div>
             <h3>Job Match Score</h3>
             <p>Paste JD vào — AI so khớp CV của bạn và chỉ ra gaps cần bổ sung để tăng cơ hội.</p>
             <div className="match-demo">
@@ -82,7 +92,9 @@ export default function FeaturesSection() {
 
           {/* Templates */}
           <div className="feature-card" id="feature-template">
-            <div className="feature-icon">🎨</div>
+            <div className="feature-icon">
+              <Palette size={28} className="text-primary" />
+            </div>
             <h3>20+ Templates</h3>
             <p>Từ ATS Classic đến Creative — đa dạng template phù hợp mọi ngành nghề và phong cách.</p>
             <div className="template-mini-grid">
@@ -95,14 +107,18 @@ export default function FeaturesSection() {
 
           {/* Cover Letter */}
           <div className="feature-card" id="feature-cover">
-            <div className="feature-icon">📝</div>
+            <div className="feature-icon">
+              <FileText size={28} className="text-primary" />
+            </div>
             <h3>Cover Letter AI</h3>
             <p>Tự động tạo cover letter cá nhân hóa từ CV + JD của bạn trong vài giây.</p>
           </div>
 
           {/* Export */}
           <div className="feature-card" id="feature-export">
-            <div className="feature-icon">📤</div>
+            <div className="feature-icon">
+              <DownloadCloud size={28} className="text-primary" />
+            </div>
             <h3>Export đa định dạng</h3>
             <p>PDF pixel-perfect, DOCX, shareable link, QR Code và embed cho website cá nhân.</p>
           </div>
