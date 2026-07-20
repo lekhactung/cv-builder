@@ -21,8 +21,7 @@ export default async function CvsPage() {
 
     return (
         <div className="db-page">
-            {/* Tiêu đề trang */}
-            <div className="db-page-header">
+           <div className="db-page-header">
                 <div>
                     <h1 className="db-page-title flex items-center gap-2">
                         <FileText className="text-primary" />
@@ -33,21 +32,11 @@ export default async function CvsPage() {
                     </p>
                 </div>
 
-                {/* Nút tạo CV gọi Server Action */}
-                <form action={async () => {
-                    "use server";
-                    const { createCvAction } = await import("@/lib/actions/cv");
-                    const { redirect } = await import("next/navigation");
-                    const newCvId = await createCvAction();
-                    redirect(`/editor/${newCvId}`);
-                }}>
-                    <button type="submit" className="btn btn-primary btn-md">
-                        + Tạo CV mới
-                    </button>
-                </form>
+                <Link href="/editor/new?template=Modern" className="btn btn-primary btn-md">
+                    + Tạo CV mới
+                </Link>
             </div>
-            {/* Danh sách CV (Tái sử dụng code cũ) */}
-            <section className="db-section mt-8">
+           <section className="db-section mt-8">
                 {cvs.length === 0 ? (
                     <EmptyState />
                 ) : (
