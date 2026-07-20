@@ -1,26 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 const filters = [
-  { key: "all",      label: "Tất cả" },
-  { key: "ats",      label: "ATS-Optimized" },
+  { key: "all", label: "Tất cả" },
+  { key: "ats", label: "ATS-Optimized" },
   { key: "creative", label: "Creative" },
-  { key: "minimal",  label: "Minimal" },
-  { key: "exec",     label: "Executive" },
+  { key: "minimal", label: "Minimal" },
+  { key: "exec", label: "Executive" },
 ];
 
 const templates = [
-  { id: 1, name: "ATS Classic",    category: "ats",      accent: "#6366F1" },
-  { id: 2, name: "Modern Clean",   category: "minimal",  accent: "#22D3EE" },
-  { id: 3, name: "Creative Pro",   category: "creative", accent: "#10B981" },
-  { id: 4, name: "Executive Bold", category: "exec",     accent: "#F59E0B" },
-  { id: 5, name: "Tech Resume",    category: "ats",      accent: "#8B5CF6" },
-  { id: 6, name: "Minimal Slate",  category: "minimal",  accent: "#6366F1" },
+  { id: 1, name: "ATS Classic", category: "ats", accent: "#6366F1", templateKey: "Classic" },
+  { id: 2, name: "Modern Clean", category: "minimal", accent: "#22D3EE", templateKey: "Modern" },
+  // { id: 3, name: "Creative Pro",   category: "creative", accent: "#10B981" },
+  // { id: 4, name: "Executive Bold", category: "exec",     accent: "#F59E0B" },
+  // { id: 5, name: "Tech Resume",    category: "ats",      accent: "#8B5CF6" },
+  // { id: 6, name: "Minimal Slate",  category: "minimal",  accent: "#6366F1" },
 ];
 
 export default function TemplatesSection() {
   const [active, setActive] = useState("all");
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleUseTemplate = async (templateKey: string) => {
+    setIsLoading(true);
+    try {
+      router.push(`/editor/new?template=${templateKey}`);
+    } catch (error) {
+      console.error("Lỗi khi tạo CV: ", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filtered = active === "all"
     ? templates
@@ -66,7 +80,13 @@ export default function TemplatesSection() {
               </div>
               <div className="template-card-footer">
                 <span className="template-card-name">{tpl.name}</span>
-                <button className="btn btn-outline btn-sm">Dùng ngay</button>
+                <button
+                  className="btn btn-outline btn-sm"
+                  onClick={() => handleUseTemplate(tpl.templateKey)}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Đang tạo..." : "Dùng ngay"}
+                </button>
               </div>
             </div>
           ))}
@@ -77,7 +97,9 @@ export default function TemplatesSection() {
             Xem tất cả 20+ templates →
           </a>
         </div>
+
       </div>
+
     </section>
   );
 }
