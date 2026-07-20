@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Outfit, Inter, JetBrains_Mono } from "next/font/google";
+import { Outfit, Inter, JetBrains_Mono, Mulish } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { SessionGuard } from "@/components/SessionGuard";
 import { SessionProvider } from "next-auth/react";
 import { ConditionalLayout } from "@/components/layout/ConditionalLayout";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const outfitBody = Outfit({
   subsets: ["latin"],
@@ -25,6 +26,13 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-mono",
+  display: "swap",
+});
+
+const mulishFont = Mulish({
+  subsets: ["latin", "vietnamese"],
+  weight: ["200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-mulish",
   display: "swap",
 });
 
@@ -61,23 +69,27 @@ export default function RootLayout({
   return (
     <html
       lang="vi"
+      data-scroll-behavior="smooth"
       className={`
         ${outfitBody.variable}
         ${interSans.variable}
         ${jetbrainsMono.variable}
+        ${mulishFont.variable}
         h-full antialiased
       `}
     >
-      <body className="min-h-full flex flex-col bg-bg-dark text-text-primary">
-        <SessionProvider>
-          <SessionGuard>
-            {/* <Header /> */}
-            <ConditionalLayout>
-              {children}
-            </ConditionalLayout>
-            {/* <Footer /> */}
-          </SessionGuard>
-        </SessionProvider>
+      <body className="min-h-full flex flex-col bg-bg-base text-text-primary">
+        <ThemeProvider>
+          <SessionProvider>
+            <SessionGuard>
+              {/* <Header /> */}
+              <ConditionalLayout>
+                {children}
+              </ConditionalLayout>
+              {/* <Footer /> */}
+            </SessionGuard>
+          </SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
