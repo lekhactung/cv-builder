@@ -1,4 +1,11 @@
+"use client"
 import Link from "next/link";
+import { useTransition, useState } from "react";
+import { deleteCvAction } from "@/lib/actions/cv";
+import { Trash2, Download } from "lucide-react";
+import { formatDateTime } from "@/lib/utils";
+import { usePdfExport } from "@/lib/pdf/usePdfExport";
+
 interface CvCardProps {
   id: string;
   title: string;
@@ -6,9 +13,39 @@ interface CvCardProps {
   template?: string;
 }
 export default function CvCard({ id, title, updatedAt, template = "Modern" }: CvCardProps) {
-  const formattedDate = new Intl.DateTimeFormat("vi-VN", {
-    day: "2-digit", month: "2-digit", year: "numeric",
-  }).format(updatedAt);
+  const [isPending, startTransition] = useTransition();
+  const [isFetchingData, setIsFetchingData] = useState(false);
+  const { exportPdf, isExporting } = usePdfExport();
+
+  const handleDownload = async () => {
+    setIsFetchingData(true);
+    try {
+      const res = await fetch(`/api/cvs/${id}`);
+      if (!res.ok) throw new Error("Không thể tải dữ liệu CV");
+      const { cv } = await res.json();
+      
+      const cvData = typeof cv.data === "string" ? JSON.parse(cv.data) : cv.data;
+      await exportPdf(cvData, cv.template || template, title);
+    } catch (error) {
+      console.error(error);
+      alert("Lỗi khi tải xuống CV. Vui lòng thử lại sau.");
+    } finally {
+      setIsFetchingData(false);
+    }
+  };
+  
+  const handleDelete = () => {
+    const confirmDelete = window.confirm(`Bạn có chắc muốn xóa CV "${title}" không? Hành động này không thể hoàn tác.`);
+
+    if (confirmDelete) {
+      startTransition(async () => {
+        await deleteCvAction(id);
+      })
+    }
+  }
+
+  const formattedDate = formatDateTime(updatedAt)
+
   return (
     <div className="db-cv-card">
       {/* Preview thumbnail */}
@@ -26,7 +63,7 @@ export default function CvCard({ id, title, updatedAt, template = "Modern" }: Cv
         <h3 className="db-cv-title">{title}</h3>
         <p className="db-cv-meta">
           <span className="badge badge-primary">{template}</span>
-          <span className="db-cv-date">Cập nhật {formattedDate}</span>
+          <span className="db-cv-date" suppressHydrationWarning>Cập nhật {formattedDate}</span>
         </p>
       </div>
       {/* Actions */}
@@ -34,10 +71,24 @@ export default function CvCard({ id, title, updatedAt, template = "Modern" }: Cv
         <Link href={`/editor/${id}`} className="btn btn-primary btn-sm">
           Chỉnh sửa
         </Link>
-        <button className="btn btn-ghost btn-sm">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" />
-          </svg>
+        <button 
+          className="btn btn-ghost btn-sm text-gray-500 hover:text-primary hover:bg-indigo-50"
+          onClick={handleDownload}
+          disabled={isFetchingData || isExporting}
+          title="Tải xuống PDF"
+        >
+          {isFetchingData || isExporting ? "Đang tải..." : <Download size={16} />}
+        </button>
+        <button className="btn btn-ghost btn-sm text-red-500 hover:text-red-700 hover:bg-red-50"
+          onClick={handleDelete}
+          disabled={isPending}
+          title="Xóa CV"
+        >
+          {isPending ? (
+            "Đang xóa..."
+          ) : (
+            <Trash2 size={16} />
+          )}
         </button>
       </div>
     </div>

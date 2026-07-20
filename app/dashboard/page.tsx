@@ -43,18 +43,9 @@ export default async function DashboardPage() {
             Quản lý và tạo CV chuyên nghiệp của bạn
           </p>
         </div>
-        <form action={async () => {
-          "use server";
-          const { createCvAction } = await import("@/lib/actions/cv");
-          const { redirect } = await import("next/navigation");
-
-          const newCvId = await createCvAction();
-          redirect(`/editor/${newCvId}`);
-        }}>
-          <button type="submit" className="btn btn-primary btn-md">
-            + Tạo CV mới
-          </button>
-        </form>
+        <Link href="/editor/new?template=Modern" className="btn btn-primary btn-md">
+          + Tạo CV mới
+        </Link>
       </div>
 
       {/* Stats */}
