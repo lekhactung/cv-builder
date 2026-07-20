@@ -47,6 +47,7 @@ export const CvDataSchema = z.object({
         name: z.string().default(""),
         level: z.string().default(""),
     })).default([]),
+    sectionOrder: z.array(z.string()).optional(),
 });
 
 export type CvData = z.infer<typeof CvDataSchema>
