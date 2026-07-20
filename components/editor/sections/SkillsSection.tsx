@@ -21,7 +21,7 @@ export default function SkillsSection({ items, onChange }: Props) {
   return (
     <div className="editor-section-form">
       <div className="form-section-header">
-        <h3 className="form-section-title">⚡ Kỹ năng</h3>
+        <h3 className="form-section-title">Kỹ năng</h3>
         <button className="btn btn-outline btn-sm" onClick={add}>+ Thêm</button>
       </div>
 

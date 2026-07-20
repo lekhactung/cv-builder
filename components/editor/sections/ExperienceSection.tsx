@@ -20,7 +20,7 @@ export default function ExperienceSection({ items, onChange }: Props) {
   return (
     <div className="editor-section-form">
       <div className="form-section-header">
-        <h3 className="form-section-title">💼 Kinh nghiệm làm việc</h3>
+        <h3 className="form-section-title"> Kinh nghiệm làm việc</h3>
         <button className="btn btn-outline btn-sm" onClick={add}>+ Thêm</button>
       </div>
 
@@ -55,7 +55,14 @@ export default function ExperienceSection({ items, onChange }: Props) {
               <label className="form-label">Đến tháng</label>
               <input className="form-input" type="month" value={item.endDate} onChange={(e) => update(item.id, "endDate", e.target.value)} disabled={item.current} />
               <label className="form-check" style={{ marginTop: "0.5rem" }}>
-                <input type="checkbox" checked={item.current} onChange={(e) => update(item.id, "current", e.target.checked)} />
+                <input 
+                  type="checkbox" 
+                  checked={item.current} 
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    onChange(items.map(i => i.id === item.id ? { ...i, current: isChecked, endDate: isChecked ? "" : i.endDate } : i));
+                  }} 
+                />
                 Hiện tại
               </label>
             </div>

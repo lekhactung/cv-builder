@@ -11,7 +11,7 @@ export default function PersonalSection({ data, onChange }: Props) {
 
   return (
     <div className="editor-section-form">
-      <h3 className="form-section-title">👤 Hồ sơ cá nhân</h3>
+      <h3 className="form-section-title"> Hồ sơ cá nhân</h3>
 
       <div className="form-row">
         <div className="form-group">
