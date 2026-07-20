@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({}));
     const cv = await prisma.cV.create({
         data: {
-            title: body.title ?? "CV Không Tiêu Đề",
+            title: (body.title ?? "CV Không Tiêu Đề").toString().trim().slice(0, 100),
             template: body.template ?? "Modern",
             data: CvDataSchema.parse({}).valueOf() as object,
             userId: session.user.id,

@@ -15,7 +15,7 @@ export async function GET(_req: Request, { params }: Params) {
     });
 
     if (!cv) return NextResponse.json({ error: "Not found" }, { status: 404 })
-    NextResponse.json({ cv })
+    return NextResponse.json({ cv })
 }
 
 export async function PATCH(req: Request, { params }: Params) {

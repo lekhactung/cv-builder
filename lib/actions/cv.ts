@@ -2,20 +2,24 @@
 
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
 import { CvDataSchema } from "../schemas/cv.schema";
 import { auth } from "@/auth";
-import { id } from "zod/locales";
 import { success } from "zod";
 
 
 export async function deleteCvAction(id: string) {
+    const session = await auth();
+    if (!session?.user?.id) throw new Error("Chưa đăng nhập");
     try {
-        await prisma.cV.delete({
-            where: { id },
+        const deleted = await prisma.cV.deleteMany({
+            where: { id, userId: session.user.id },
         });
 
+        if (deleted.count === 0) {
+            return { success: false, error: "CV không tồn tại hoặc không có quyền" }
+        }
         revalidatePath("/dashboard");
-
         return { success: true };
     } catch (error) {
         console.error("Lỗi khi xóa CV:", error);
@@ -23,14 +27,20 @@ export async function deleteCvAction(id: string) {
     }
 }
 
-export async function createCvAction() {
+export async function createCvAction(
+    templateId: string,
+    initialData: unknown = {},
+    inititalTitle: string = "CV Không Tiêu Đề"
+) {
     const session = await auth();
     if (!session?.user?.id) throw new Error("Chưa đăng nhập");
+
+    const validatedData = CvDataSchema.parse(initialData);
 
     const cv = await prisma.cV.create({
         data: {
             title: "CV Không Tiêu Đề",
-            template: "Modern",
+            template: templateId,
             data: CvDataSchema.parse({}) as object,
             userId: session.user.id,
         }
@@ -38,9 +48,12 @@ export async function createCvAction() {
     return cv.id;
 }
 
-export async function updateCvAction(id: string, data: any, title: string) {
+
+export async function updateCvAction(id: string, data: unknown, title: string) {
     const session = await auth();
     if (!session?.user?.id) throw new Error("Chưa đăng nhập");
+
+    const validatedData = CvDataSchema.parse(data)
 
     await prisma.cV.update({
         where: {
@@ -48,7 +61,7 @@ export async function updateCvAction(id: string, data: any, title: string) {
             userId: session.user.id
         },
         data: {
-            data: data,
+            data: validatedData as object,
             title: title,
         },
     });
