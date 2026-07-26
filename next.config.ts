@@ -1,19 +1,18 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 const nextConfig: NextConfig = {
   turbopack: {
-    root: path.resolve("../"),
+    resolveAlias: {
+      // Turbopack equivalent of webpack: config.resolve.alias.canvas = false
+      // Required for @react-pdf/renderer and pdfjs-dist compatibility
+      canvas: { browser: "./empty-module.js", default: "./empty-module.js" },
+    },
   },
   images: {
     remotePatterns: [
        { protocol: "https", hostname: "lh3.googleusercontent.com" },
     ]
   },
-  webpack : (config) => { 
-    config.resolve.alias.canvas = false;
-    return config;
-  }
 };
 
 export default nextConfig;

@@ -1,3 +1,4 @@
+import Link from "next/link";
 export default function HeroSection() {
   return (
     <section className="hero" id="hero">
@@ -23,12 +24,11 @@ export default function HeroSection() {
             giúp bạn vượt qua ATS và ấn tượng nhà tuyển dụng ngay từ cái nhìn đầu tiên.
           </p>
           <div className="hero-cta">
-            <a href="/editor" className="btn btn-primary btn-lg" id="hero-cta-primary">
+            <Link href="/editor/new?template=Modern" className="btn btn-primary btn-lg" id="hero-cta-primary">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-              </svg>
-              Tạo CV miễn phí
-            </a>
+              </svg> Tạo CV mới
+            </Link>
             <a href="#demo" className="btn btn-outline btn-lg" id="hero-cta-demo">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <polygon points="5,3 19,12 5,21" fill="currentColor" />

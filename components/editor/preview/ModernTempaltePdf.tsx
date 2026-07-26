@@ -1,4 +1,4 @@
-// components/editor/preview/ModernTemplatePdf.tsx
+
 import {
   Document,
   Page,
@@ -8,7 +8,6 @@ import {
   Font,
 } from "@react-pdf/renderer";
 import { CvData } from "@/lib/schemas/cv.schema";
-
 const LEVEL_MAP: Record<string, number> = {
   beginner: 25,
   intermediate: 50,
@@ -16,16 +15,15 @@ const LEVEL_MAP: Record<string, number> = {
   expert: 95,
 };
 
-// Đăng ký font hỗ trợ tiếng Việt — file local trong public/fonts/
 Font.register({
-  family: "Mulish",
+  family: "NotoSans",
   fonts: [
     {
-      src: "/fonts/Mulish-Regular.ttf",
+      src: "/fonts/NotoSans-Regular.ttf",
       fontWeight: 400,
     },
     {
-      src: "/fonts/Mulish-Bold.ttf",
+      src: "/fonts/NotoSans-Bold.ttf",
       fontWeight: 700,
     },
   ],
@@ -33,7 +31,7 @@ Font.register({
 
 const s = StyleSheet.create({
   page: {
-    fontFamily: "Mulish",
+    fontFamily: "NotoSans",
     fontSize: 10,
     color: "#1e1e2e",
     padding: "34 45",
@@ -48,14 +46,14 @@ const s = StyleSheet.create({
   },
   name: {
     fontSize: 22,
-    fontFamily: "Mulish",
+    fontFamily: "NotoSans",
     fontWeight: 700,
     color: "#1e1e2e",
     marginBottom: 4,
   },
   jobTitle: {
     fontSize: 11,
-    fontFamily: "Mulish",
+    fontFamily: "NotoSans",
     fontWeight: 700,
     color: "#6366f1",
     marginBottom: 8,
@@ -75,7 +73,7 @@ const s = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 10,
-    fontFamily: "Mulish",
+    fontFamily: "NotoSans",
     fontWeight: 700,
     color: "#6366f1",
     borderBottomWidth: 1,
@@ -101,7 +99,7 @@ const s = StyleSheet.create({
   },
   itemTitle: {
     fontSize: 10,
-    fontFamily: "Mulish",
+    fontFamily: "NotoSans",
     fontWeight: 700,
     color: "#1e1e2e",
   },
@@ -145,7 +143,7 @@ const s = StyleSheet.create({
   },
   skillName: {
     fontSize: 9,
-    fontFamily: "Mulish",
+    fontFamily: "NotoSans",
     fontWeight: 700,
     color: "#1e1e2e",
   },
@@ -165,7 +163,6 @@ const s = StyleSheet.create({
   },
 });
 
-// ─── Component ─────────────────────────────────────────────────────────────
 interface Props {
   data: CvData;
   sectionOrder?: string[];
@@ -176,7 +173,6 @@ const DEFAULT_ORDER = ["personal", "experience", "education", "skills"];
 export default function ModernTemplatePdf({ data, sectionOrder = DEFAULT_ORDER }: Props) {
   const { personal, experience, education, skills } = data;
 
-  // ── Render từng section ──────────────────────────────────────────────────
   const renderSummary = () =>
     personal.summary ? (
       <View key="personal" style={s.section}>
@@ -251,7 +247,6 @@ export default function ModernTemplatePdf({ data, sectionOrder = DEFAULT_ORDER }
       </View>
     ) : null;
 
-  // Map section id → render function
   const sectionRenderers: Record<string, () => React.ReactNode> = {
     personal: renderSummary,
     experience: renderExperience,
@@ -262,7 +257,6 @@ export default function ModernTemplatePdf({ data, sectionOrder = DEFAULT_ORDER }
   return (
     <Document title={personal.fullName || "CV"} author={personal.fullName}>
       <Page size="A4" style={s.page}>
-        {/* ── Header (luôn cố định ở trên) ── */}
         <View style={s.header}>
           <Text style={s.name}>{personal.fullName || "Họ và Tên"}</Text>
           <Text style={s.jobTitle}>{personal.jobTitle || "Chức danh"}</Text>
@@ -275,7 +269,6 @@ export default function ModernTemplatePdf({ data, sectionOrder = DEFAULT_ORDER }
           </View>
         </View>
 
-        {/* ── Các section theo thứ tự người dùng kéo thả ── */}
         {sectionOrder.map((id) => sectionRenderers[id]?.())}
       </Page>
     </Document>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,600;0,700;0,800&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=PlusJakarta+Sans:ital,wght@0,600;0,700;0,800&family=Inter:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -205,7 +205,9 @@ html {
 }
 
 .dark .editor-section-tabs {
+  font-size: large;
   background: var(--bg-surface2);
+  justify-content: center;
 }
 
 .dark .editor-item-card {
@@ -2934,7 +2936,7 @@ a:focus:not(:focus-visible) {
 
 .db-page {
   padding: 2rem 2.5rem;
-  max-width: 1100px;
+  /* max-width: 1100px; */
 }
 
 .db-page-header {
@@ -3270,7 +3272,8 @@ a:focus:not(:focus-visible) {
 
 /* Panel trái */
 .editor-panel-left {
-  width: 380px;
+  max-width: 35%;
+  width:480px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -3297,7 +3300,7 @@ a:focus:not(:focus-visible) {
   gap: 0.375rem;
   padding: 0.375rem 0.75rem;
   border-radius: var(--radius-md);
-  font-size: 0.8125rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-secondary);
   background: none;
@@ -3632,7 +3635,7 @@ a:focus:not(:focus-visible) {
   position: relative;
   display: flex;
   align-items: flex-start;
-  gap: 0.25rem;
+  gap: 0.5rem;
   /* Đảm bảo scrollIntoView dừng đúng dưới thanh tabs */
   scroll-margin-top: 0.5rem;
 }
@@ -3646,15 +3649,20 @@ a:focus:not(:focus-visible) {
 
 .sortable-drag-handle {
   flex-shrink: 0;
-  margin-top: 1rem;
-  padding: 0.25rem 0.125rem;
+  margin-top: 0.875rem;
+  padding: 0.375rem 0.25rem;
   color: var(--text-muted);
   background: none;
   border: none;
   border-radius: var(--radius-sm);
   cursor: grab;
-  opacity: 0;
+  opacity: 0.3;
   transition: opacity var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+  min-width: 28px;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .sortable-item:hover .sortable-drag-handle {
@@ -3664,13 +3672,25 @@ a:focus:not(:focus-visible) {
 .sortable-drag-handle:hover {
   color: var(--primary);
   background: var(--primary-dim);
+  opacity: 1;
 }
 
 .sortable-drag-handle:active {
   cursor: grabbing;
+  opacity: 1;
+  color: var(--primary);
+  background:  var(--primary-dim);
 }
 
 .sortable-item-content {
   flex: 1;
   min-width: 0;
+  padding-right: 15px;
+  padding-bottom: 20px;
+  padding-top: 5px;
+}
+
+.sortable-drag-handle-placeholder {
+  flex-shrink: 0;
+  min-width: 28px;      
 }

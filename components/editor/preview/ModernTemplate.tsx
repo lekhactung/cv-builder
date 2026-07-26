@@ -91,7 +91,6 @@ export default function ModernTemplate({ data, sectionOrder = DEFAULT_ORDER }: P
       </div>
     ) : null;
 
-  // Map section id → render function
   const sectionRenderers: Record<string, () => React.ReactNode> = {
     personal: renderSummary,
     experience: renderExperience,
@@ -101,7 +100,6 @@ export default function ModernTemplate({ data, sectionOrder = DEFAULT_ORDER }: P
 
   return (
     <div className="cv-modern">
-      {/* Header — luôn cố định ở trên */}
       <div className="cv-header">
         <div className="cv-header-info">
           <h1 className="cv-name">{personal.fullName || "Họ và Tên"}</h1>
@@ -116,7 +114,6 @@ export default function ModernTemplate({ data, sectionOrder = DEFAULT_ORDER }: P
         </div>
       </div>
 
-      {/* Các section theo thứ tự người dùng kéo thả */}
       {sectionOrder.map((id) => sectionRenderers[id]?.())}
     </div>
   );

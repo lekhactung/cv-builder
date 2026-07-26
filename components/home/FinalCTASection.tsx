@@ -10,7 +10,7 @@ export default function FinalCTASection() {
             Sẵn sàng tạo CV <span className="gradient-text">ấn tượng</span>?
           </h2>
           <p>Tham gia cùng 10,000+ ứng viên đã nâng tầm CV của mình với ResumeBuilder</p>
-          <Link href="/editor" className="btn btn-primary btn-lg" id="final-cta-btn">
+          <Link href="/editor/new?template=Modern" className="btn btn-primary btn-lg" id="final-cta-btn">
             Tạo CV ngay — Miễn phí
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
               <path
