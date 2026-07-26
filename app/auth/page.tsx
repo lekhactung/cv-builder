@@ -25,7 +25,7 @@ export default function AuthPage() {
     if (result?.error) {
       setError("Email hoặc mật khẩu không đúng");
     } else {
-      router.push("/dashboard");
+      router.push("/");
       router.refresh();
     }
     setLoading(false);
@@ -58,7 +58,7 @@ export default function AuthPage() {
         password: form.get("password"),
         redirect: false,
       });
-      router.push("/dashboard");
+      router.push("/");
       router.refresh();
     }
     setLoading(false);
@@ -130,7 +130,7 @@ export default function AuthPage() {
 
             <div className="oauth-grid">
               <button className="oauth-btn"
-                onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+                onClick={() => signIn("google", { callbackUrl: "/" })}
                 id="google-login-btn"
                 type="button">
                 <GoogleIcon /> Google
@@ -184,7 +184,7 @@ export default function AuthPage() {
               <button className="oauth-btn" 
               id="google-register-btn" 
               type="button"
-              onClick={()=>signIn("google", {callbackUrl : "/dashboard"})}>
+              onClick={()=>signIn("google", {callbackUrl : "/"})}>
                 <GoogleIcon /> Google
               </button>
               <button className="oauth-btn" id="linkedin-register-btn" type="button">

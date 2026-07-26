@@ -12,10 +12,10 @@ export default auth((req) => {
     }
 
     if (isAuthPage && isLoggedIn) {
-        return Response.redirect(new URL("/dashboard", req.url));
+        return Response.redirect(new URL("/", req.url));
     }
 });
 
 export const config = {
-    matcher: ["/dashboard/:path*", "/editor/:path*", "/auth/:path*"],
+    matcher: ["/dashboard/:path*", "/editor/:path*", "/auth/:path*" , "/about", "/",],
 };
