@@ -1,6 +1,7 @@
 "use client";
 import { ExperienceItem } from "@/lib/schemas/cv.schema";
 
+
 interface Props {
   items: ExperienceItem[];
   onChange: (items: ExperienceItem[]) => void;
@@ -12,7 +13,7 @@ const newItem = (): ExperienceItem => ({
 });
 
 export default function ExperienceSection({ items, onChange }: Props) {
-  const add    = () => onChange([...items, newItem()]);
+  const add = () => onChange([...items, newItem()]);
   const remove = (id: string) => onChange(items.filter((i) => i.id !== id));
   const update = (id: string, field: keyof ExperienceItem, value: string | boolean) =>
     onChange(items.map((i) => (i.id === id ? { ...i, [field]: value } : i)));
@@ -55,13 +56,13 @@ export default function ExperienceSection({ items, onChange }: Props) {
               <label className="form-label">Đến tháng</label>
               <input className="form-input" type="month" value={item.endDate} onChange={(e) => update(item.id, "endDate", e.target.value)} disabled={item.current} />
               <label className="form-check" style={{ marginTop: "0.5rem" }}>
-                <input 
-                  type="checkbox" 
-                  checked={item.current} 
+                <input
+                  type="checkbox"
+                  checked={item.current}
                   onChange={(e) => {
                     const isChecked = e.target.checked;
                     onChange(items.map(i => i.id === item.id ? { ...i, current: isChecked, endDate: isChecked ? "" : i.endDate } : i));
-                  }} 
+                  }}
                 />
                 Hiện tại
               </label>
@@ -72,7 +73,7 @@ export default function ExperienceSection({ items, onChange }: Props) {
             <label className="form-label">Mô tả công việc</label>
             <textarea className="form-input form-textarea" value={item.description}
               onChange={(e) => update(item.id, "description", e.target.value)}
-              placeholder="- Phát triển tính năng X...\n- Tối ưu performance..."
+              placeholder="- Phát triển tính năng abc..."
               rows={4}
             />
           </div>

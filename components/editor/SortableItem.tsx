@@ -6,9 +6,10 @@ import { GripVertical } from "lucide-react";
 interface Props {
   id: string;
   children: React.ReactNode;
+  showHandle?: boolean;
 }
 
-export function SortableItem({ id, children }: Props) {
+export function SortableItem({ id, children, showHandle }: Props) {
   const {
     attributes,
     listeners,
@@ -29,17 +30,20 @@ export function SortableItem({ id, children }: Props) {
       style={style}
       className={`sortable-item${isDragging ? " sortable-item--dragging" : ""}`}
     >
-      <button
-        className="sortable-drag-handle"
-        {...attributes}
-        {...listeners}
-        aria-label="Kéo để sắp xếp"
-        tabIndex={-1}
-        type="button"
-      >
-        <GripVertical size={15} />
-      </button>
-
+      {showHandle ? (
+        <button
+          className="sortable-drag-handle"
+          {...attributes}
+          {...listeners}
+          aria-label="Kéo để sắp xếp"
+          tabIndex={-1}
+          type="button"
+        >
+          <GripVertical size={20} />
+        </button>
+      ) : (
+        <div className="sortable-drag-handle-placeholder"></div>
+      )};
       <div className="sortable-item-content">{children}</div>
     </div>
   );

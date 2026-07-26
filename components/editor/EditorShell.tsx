@@ -136,7 +136,7 @@ export default function EditorShell({ cvId, initialTitle, initialData, initialTe
               items={sectionOrder}
               onReorder={handleSectionReorder}
               renderItem={(id) => (
-                <SortableItem key={id} id={id}>
+                <SortableItem key={id} id={id} showHandle={id !== "personal"}>
                   {renderSection(id)}
                 </SortableItem>
               )}
