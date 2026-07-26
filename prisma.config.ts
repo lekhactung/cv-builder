@@ -24,15 +24,4 @@ export default defineConfig({
     url: dbUrl,
   },
 
-  migrate: {
-    async adapter() {
-      const { PrismaPg } = await import("@prisma/adapter-pg");
-      const { Pool } = await import("pg");
-      const pool = new Pool({
-        connectionString: dbUrl,
-        ssl: { rejectUnauthorized: false },
-      });
-      return new PrismaPg(pool);
-    },
-  },
 });
