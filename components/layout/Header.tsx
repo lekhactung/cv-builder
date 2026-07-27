@@ -12,6 +12,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const { data: session, status } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const { theme, toggleTheme, isDark } = useTheme();
 
   useEffect(() => {
@@ -64,16 +65,17 @@ export default function Header() {
               <div style={{ position: "relative" }}>
 
                 <div
-                  style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}
+                  style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", flexShrink: 0 }}
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                 >
-                  {session.user.image ? (
+                  {session.user.image && !imageError ? (
                     <img
                       src={session.user.image}
                       alt={session.user.name ?? "Avatar"}
                       width={34}
                       height={34}
                       style={{ borderRadius: "50%", border: "2px solid var(--primary-light)", objectFit: "cover" }}
+                      onError={() => setImageError(true)}
                     />
                   ) : (
                     <div style={{
@@ -86,7 +88,7 @@ export default function Header() {
                     </div>
                   )}
 
-                  <span style={{ fontSize: 14, fontWeight: 500, color: "var(--text-primary)" }}>
+                  <span style={{ fontSize: 14, fontWeight: 500, color: "var(--text-primary)", whiteSpace: "nowrap", flexShrink: 0, minWidth: "max-content" }}>
                     {session.user.name}
                   </span>
 
