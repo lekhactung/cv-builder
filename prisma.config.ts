@@ -15,7 +15,7 @@ if (fs.existsSync(envPath)) {
   }
 }
 
-const dbUrl = process.env.DATABASE_URL!;
+const dbUrl = process.env.DIRECT_URL || process.env.DATABASE_URL!;
 
 export default defineConfig({
   schema: path.join("prisma", "schema.prisma"),
