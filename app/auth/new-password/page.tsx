@@ -1,11 +1,10 @@
 "use client";
-export const dynamic = 'force-dynamic';
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { updatePassword } from "@/lib/actions/new-password";
 import Link from "next/link";
 
-export default function NewPasswordPage() {
+function NewPasswordForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -33,39 +32,53 @@ export default function NewPasswordPage() {
     setError("");
 
     const res = await updatePassword(email, code, password);
-    
+
     if (res?.error) {
       setError(res.error);
     } else {
       setSuccess(res.success || "Cập nhật thành công!");
-      // Tự động chuyển về trang đăng nhập sau 2 giây
       setTimeout(() => {
         router.push("/auth");
       }, 2000);
     }
-    
+
     setLoading(false);
   };
 
   if (!email || !code) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-500">Thiếu thông tin xác thực! <Link href="/auth/forgot-password" className="underline">Thử lại</Link></p>
+        <p className="text-red-500">
+          Thiếu thông tin xác thực!{" "}
+          <Link href="/auth/forgot-password" className="underline">
+            Thử lại
+          </Link>
+        </p>
       </div>
-    )
+    );
   }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg">
-        <h2 className="text-2xl font-bold text-center mb-6" style={{ background: "linear-gradient(135deg, #059669 0%, #10B981 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Đặt Mật Khẩu Mới</h2>
+        <h2
+          className="text-2xl font-bold text-center mb-6"
+          style={{
+            background: "linear-gradient(135deg, #059669 0%, #10B981 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+          }}
+        >
+          Đặt Mật Khẩu Mới
+        </h2>
 
         {error && (
           <div className="p-3 mb-4 text-sm text-red-600 bg-red-100 rounded-lg">
             {error}
           </div>
         )}
-        
+
         {success && (
           <div className="p-3 mb-4 text-sm text-green-700 bg-green-100 rounded-lg">
             {success} Đang chuyển hướng...
@@ -74,7 +87,9 @@ export default function NewPasswordPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Mật khẩu mới</label>
+            <label className="block text-sm font-medium mb-1">
+              Mật khẩu mới
+            </label>
             <input
               type="password"
               value={password}
@@ -84,7 +99,7 @@ export default function NewPasswordPage() {
               required
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={loading || !!success}
@@ -95,5 +110,19 @@ export default function NewPasswordPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function NewPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen bg-gray-50">
+          <p className="text-gray-500">Đang tải...</p>
+        </div>
+      }
+    >
+      <NewPasswordForm />
+    </Suspense>
   );
 }
