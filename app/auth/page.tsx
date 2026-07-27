@@ -156,7 +156,7 @@ export default function AuthPage() {
                   <input type="checkbox" id="remember-me" />
                   Ghi nhớ đăng nhập
                 </label>
-                <a href="#" className="form-link">Quên mật khẩu?</a>
+                <Link href="/auth/forgot-password" className="form-link">Quên mật khẩu?</Link>
               </div>
 
               {error && <p className="auth-error">{error}</p>}
