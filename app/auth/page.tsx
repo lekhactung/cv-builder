@@ -1,14 +1,27 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function AuthPage() {
+const oauthErrorMessages: Record<string, string> = {
+  OAuthSignin: "Không thể khởi tạo đăng nhập Google. Vui lòng thử lại.",
+  OAuthCallback: "Đăng nhập Google thất bại. Vui lòng thử lại.",
+  OAuthCreateAccount: "Không thể tạo tài khoản từ Google. Email có thể đã được dùng với phương thức khác.",
+  OAuthAccountNotLinked: "Email này đã được đăng ký bằng phương thức khác. Vui lòng đăng nhập bằng email & mật khẩu.",
+  Callback: "Có lỗi xảy ra trong quá trình xác thực.",
+  Default: "Đăng nhập Google thất bại. Vui lòng thử lại.",
+};
+
+function AuthContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const oauthError = searchParams.get("error");
   const [tab, setTab] = useState<"login" | "register">("login");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(
+    oauthError ? (oauthErrorMessages[oauthError] ?? oauthErrorMessages["Default"]) : ""
+  );
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -238,5 +251,13 @@ export default function AuthPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense>
+      <AuthContent />
+    </Suspense>
   );
 }
