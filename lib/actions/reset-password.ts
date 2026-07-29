@@ -39,3 +39,20 @@ export const resetPassword = async (email: string) => {
         };
     }
 }
+
+export const verifyResetCode = async (email: string, code: string) => {
+    const existingToken = await prisma.passwordResetToken.findFirst({
+        where: { email, token: code }
+    });
+
+    if (!existingToken) {
+        return { error: "Mã xác nhận không hợp lệ!" };
+    }
+
+    const hasExpired = new Date(existingToken.expires) < new Date();
+    if (hasExpired) {
+        return { error: "Mã xác nhận đã hết hạn!" };
+    }
+
+    return { success: true };
+}
