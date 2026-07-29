@@ -12,6 +12,11 @@ export const updatePassword = async (email: string, code: string, newPassword: s
         return { error: "Mã xác nhận không hợp lệ!" };
     }
 
+    
+    if (!newPassword || newPassword.length < 6) {
+        return { error: "Mật khẩu phải có ít nhất 6 ký tự!" };
+    }
+
     const hasExpired = new Date(existingToken.expires) < new Date();
     if (hasExpired) {
         return { error: "Mã xác nhận đã hết hạn!" };
