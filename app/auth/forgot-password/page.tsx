@@ -1,14 +1,20 @@
 "use client";
 import { useState } from "react";
-import { resetPassword } from "@/lib/actions/reset-password";
+import { resetPassword, verifyResetCode } from "@/lib/actions/reset-password";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+
+const maskEmail = (email: string) => {
+  if (!email || !email.includes("@")) return email;
+  const [name, domain] = email.split("@");
+  return `${name.slice(0, 3)}****@${domain}`;
+};
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
-  const [step, setStep] = useState(1); 
+  const [step, setStep] = useState(1);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -17,23 +23,42 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     setError("");
 
-    const res = await resetPassword(email);
-    if (res?.error) {
-      setError(res.error);
-    } else {
-      setStep(2); 
+    try {
+      const res = await resetPassword(email);
+      if (res?.error) {
+        setError(res.error);
+      } else {
+        setStep(2);
+      }
+    } catch (err) {
+      setError("Có lỗi xảy ra khi kết nối máy chủ. Vui lòng thử lại!");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  const handleVerifyCode = (e: React.FormEvent) => {
+  const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     if (code.length !== 6) {
       setError("Vui lòng nhập đủ 6 số!");
       return;
     }
-   
-    router.push(`/auth/new-password?email=${encodeURIComponent(email)}&code=${code}`);
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const res = await verifyResetCode(email, code);
+      if (res?.error) {
+        setError(res.error);
+      } else {
+        router.push(`/auth/new-password?email=${encodeURIComponent(email)}&code=${code}`);
+      }
+    } catch (err) {
+      setError("Lỗi kết nối máy chủ, vui lòng thử lại.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -71,15 +96,19 @@ export default function ForgotPasswordPage() {
         ) : (
           <form onSubmit={handleVerifyCode} className="space-y-4">
             <div className="p-3 mb-4 text-sm text-green-700 bg-green-100 rounded-lg">
-              Mã xác nhận 6 số đã được gửi tới email <b>{email}</b>.
+              Mã xác nhận 6 số đã được gửi tới email <b>{maskEmail(email)}</b>.
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Nhập mã xác nhận (6 số)</label>
               <input
                 type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 maxLength={6}
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
+                onChange={(e) =>
+                  setCode(e.target.value.replace(/\D/g, ""))
+                }
                 className="w-full px-4 py-2 border rounded-lg text-center text-xl tracking-[0.5em] focus:ring-2 focus:ring-violet-500 outline-none"
                 placeholder="------"
                 required
@@ -87,9 +116,10 @@ export default function ForgotPasswordPage() {
             </div>
             <button
               type="submit"
-              className="w-full py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700"
+              disabled={loading}
+              className="w-full py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 disabled:opacity-50"
             >
-              Xác nhận mã
+              {loading ? "Đang xác nhận..." : "Xác nhận mã"}
             </button>
             <button
               type="button"
