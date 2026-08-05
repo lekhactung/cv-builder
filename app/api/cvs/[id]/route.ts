@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { CvDataSchema } from "@/lib/schemas/cv.schema";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -27,9 +28,15 @@ export async function PATCH(req: Request, { params }: Params) {
     const body = await req.json();
 
     const allowedFields: Record<string, unknown> = {};
-    if (body.title !== undefined) allowedFields.title = body.title;
-    if (body.data !== undefined) allowedFields.data = body.data;
-    if (body.template !== undefined) allowedFields.template = body.template;
+    if (body.title !== undefined) {
+        allowedFields.title = String(body.title).trim().slice(0, 100);
+    }
+    if (body.data !== undefined) {
+        allowedFields.data = CvDataSchema.parse(body.data).valueOf() as object;
+    }
+    if (body.template !== undefined) {
+        allowedFields.template = String(body.template).trim().slice(0, 50);
+    }
 
     const cv = await prisma.cV.updateMany({
         where: { id, userId: session.user.id },
