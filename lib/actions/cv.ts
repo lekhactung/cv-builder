@@ -2,10 +2,8 @@
 
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
 import { CvDataSchema } from "../schemas/cv.schema";
 import { auth } from "@/auth";
-import { success } from "zod";
 
 
 export async function deleteCvAction(id: string) {
@@ -30,18 +28,24 @@ export async function deleteCvAction(id: string) {
 export async function createCvAction(
     templateId: string,
     initialData: unknown = {},
-    inititalTitle: string = "CV Không Tiêu Đề"
+    initialTitle: string = "CV Không Tiêu Đề"
 ) {
     const session = await auth();
     if (!session?.user?.id) throw new Error("Chưa đăng nhập");
 
-    const validatedData = CvDataSchema.parse(initialData);
+    const result = CvDataSchema.safeParse(initialData);
+
+    if (!result.success) {
+        throw new Error("Dữ liệu CV không hợp lệ");
+    }
+
+    const validatedData = result.data;
 
     const cv = await prisma.cV.create({
         data: {
-            title: "CV Không Tiêu Đề",
+            title: initialTitle,
             template: templateId,
-            data: CvDataSchema.parse({}) as object,
+            data: validatedData,
             userId: session.user.id,
         }
     })
@@ -54,6 +58,7 @@ export async function updateCvAction(id: string, data: unknown, title: string) {
     if (!session?.user?.id) throw new Error("Chưa đăng nhập");
 
     const validatedData = CvDataSchema.parse(data)
+    const validTitle = typeof title === "string" ? title.trim().slice(0, 100) : "CV Không Tiêu Đề";
 
     await prisma.cV.update({
         where: {
@@ -62,7 +67,7 @@ export async function updateCvAction(id: string, data: unknown, title: string) {
         },
         data: {
             data: validatedData as object,
-            title: title,
+            title: validTitle,
         },
     });
 
