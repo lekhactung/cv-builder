@@ -105,11 +105,11 @@ export default function ModernTemplate({ data, sectionOrder = DEFAULT_ORDER }: P
           <h1 className="cv-name">{personal.fullName || "Họ và Tên"}</h1>
           <p className="cv-jobtitle">{personal.jobTitle || "Chức danh"}</p>
           <div className="cv-contacts">
-            {personal.email    && <span>✉ {personal.email}</span>}
-            {personal.phone    && <span>📞 {personal.phone}</span>}
-            {personal.location && <span>📍 {personal.location}</span>}
-            {personal.website  && <span>🔗 {personal.website}</span>}
-            {personal.linkedin && <span>🔗 {personal.linkedin}</span>}
+            {personal.email    && <span> {personal.email}</span>}
+            {personal.phone    && <span> {personal.phone}</span>}
+            {personal.location && <span> {personal.location}</span>}
+            {personal.website  && <span> {personal.website}</span>}
+            {personal.linkedin && <span> {personal.linkedin}</span>}
           </div>
         </div>
       </div>
