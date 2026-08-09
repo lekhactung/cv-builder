@@ -93,7 +93,7 @@ export const ColumnSchema = z.object({
 export type Column = z.infer<typeof ColumnSchema>
 
 export const CvDocumentSchema = z.object({
-  layout:   z.enum(["single", "two-column", "sidebar-left", "sidebar-right"]).default("single"),
+  layout:   z.enum(["single", "two-column", "sidebar-left", "sidebar-right", "harvard"]).default("single"),
   theme:    z.object({
     primaryColor:  z.string().default("#7c3aed"),
     accentColor:   z.string().default("#f43f5e"),
