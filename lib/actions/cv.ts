@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { CvDataSchema } from "../schemas/cv.schema";
 import { auth } from "@/auth";
-
+import { CvDocumentSchema } from "../schemas/block.schema";
 
 export async function deleteCvAction(id: string) {
     const session = await auth();
@@ -33,7 +33,8 @@ export async function createCvAction(
     const session = await auth();
     if (!session?.user?.id) throw new Error("Chưa đăng nhập");
 
-    const result = CvDataSchema.safeParse(initialData);
+    const isDocument = initialData && typeof initialData === 'object' && 'columns' in initialData;
+    const result = isDocument ? CvDocumentSchema.safeParse(initialData) : CvDataSchema.safeParse(initialData);
 
     if (!result.success) {
         throw new Error("Dữ liệu CV không hợp lệ");
@@ -45,7 +46,7 @@ export async function createCvAction(
         data: {
             title: initialTitle,
             template: templateId,
-            data: validatedData,
+            data: validatedData as any,
             userId: session.user.id,
         }
     })
@@ -53,11 +54,12 @@ export async function createCvAction(
 }
 
 
-export async function updateCvAction(id: string, data: unknown, title: string) {
+export async function updateCvAction(id: string, data: unknown, title: string, template?: string) {
     const session = await auth();
     if (!session?.user?.id) throw new Error("Chưa đăng nhập");
 
-    const validatedData = CvDataSchema.parse(data)
+    const isDocument = data && typeof data === 'object' && 'columns' in data;
+    const validatedData = isDocument ? CvDocumentSchema.parse(data) : CvDataSchema.parse(data);
     const validTitle = typeof title === "string" ? title.trim().slice(0, 100) : "CV Không Tiêu Đề";
 
     await prisma.cV.update({
@@ -66,10 +68,22 @@ export async function updateCvAction(id: string, data: unknown, title: string) {
             userId: session.user.id
         },
         data: {
-            data: validatedData as object,
+            data: validatedData as any,
             title: validTitle,
+            ...(template && { template })
         },
     });
 
     return { success: true }
+}
+
+export async function getCvAction(id: string) {
+    const cv = await prisma.cV.findUnique({ where: { id } })
+    if (!cv) return null
+
+    const rawData = cv.data as Record<string, unknown>
+    if (rawData.columns) {
+        const doc = CvDocumentSchema.parse(rawData)
+        return { ...cv, document: doc, isBlockBased: false }
+    }
 }
