@@ -1,156 +1,139 @@
-"use client";
-import { useState, useCallback, useRef, useEffect } from "react";
-import { createCvAction, updateCvAction } from "@/lib/actions/cv";
-import { CvData } from "@/lib/schemas/cv.schema";
-import EditorToolbar from "./EditorToolbar";
-import EditorForm from "./EditorForm";
-import CvPreview from "./CvPreview";
-import { usePdfExport } from "@/lib/pdf/usePdfExport";
-import { SortableSectionList } from "./SortableSectionList";
-import { SortableItem } from "./SortableItem";
-
-type Section = "personal" | "experience" | "education" | "skills";
+"use client"
+import { useEffect, useState, useCallback, useRef } from "react"
+import { useEditorStore } from "@/lib/stores/editorStore"
+import { CvDocument } from "@/lib/schemas/block.schema"
+import { updateCvAction, createCvAction } from "@/lib/actions/cv"
+import { Layers } from "lucide-react"
+import EditorToolbar from "./EditorToolbar"
+import BlockCanvas from "./BlockCanvas"
+import CvPreview from "./CvPreview"
+import TemplatePicker from "./TemplatePicker"
 
 interface Props {
-  cvId: string;
-  initialTitle: string;
-  initialData: CvData;
-  initialTemplate: string;
+  cvId: string
+  initialTitle: string
+  initialTemplateName: string
+  initialDocument: CvDocument
 }
 
-export default function EditorShell({ cvId, initialTitle, initialData, initialTemplate }: Props) {
-  const [title, setTitle] = useState(initialTitle);
-  const [cvData, setCvData] = useState<CvData>(initialData);
-  const [activeSection, setSection] = useState<Section>("personal");
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(true);
-  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const { exportPdf, isExporting } = usePdfExport();
-  const [currentCvId, setCurrentCvId] = useState(cvId);
-  const [sectionOrder, setSectionOrder] = useState<string[]>(
-    cvData.sectionOrder ?? ["personal", "experience", "education", "skills"]
-  );
+export default function EditorShell({ cvId, initialTitle, initialTemplateName, initialDocument }: Props) {
+  const {
+    document, title, saved, saving, templateName,
+    loadDocument, setTitle, setSaved, setSaving,
+    undo, redo, canUndo, canRedo,
+  } = useEditorStore()
 
-  const handleExportPdf = () => {
-    exportPdf(cvData, initialTemplate, title);
-  }
-  const saveCv = useCallback(async (data: CvData, t: string) => {
-    setSaving(true);
-    try {
-      if (currentCvId === "new") {
-        const newId = await createCvAction(initialTemplate, data, t)
-        setCurrentCvId(newId);
-        window.history.replaceState(null, "", `/editor/${newId}`);
-      }
-      else {
-        await updateCvAction(currentCvId, data, t);
-      }
-      setSaved(true);
-    } catch (error) {
-      console.error("Lỗi khi lưu CV: ", error);
-    } finally {
-      setSaving(false);
-    }
-  }, [currentCvId, initialTemplate]);
+  const [showTemplates, setShowTemplates] = useState(cvId === "new")
+  const [currentCvId, setCurrentCvId] = useState(cvId)
+  const [isExporting, setIsExporting] = useState(false)
+  const autoSaveTime = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
-  const updateCvData = useCallback((updater: (prev: CvData) => CvData) => {
-    setSaved(false);
-    setCvData((prev) => {
-      const next = updater(prev);
-      clearTimeout(autoSaveTimer.current);
-      autoSaveTimer.current = setTimeout(() => saveCv(next, title), 1500);
-      return next;
-    });
-  }, [saveCv, title]);
-
+  // ── Load document ────────────────────────────────────────────
   useEffect(() => {
-    document.title = title || "Editor";
-  }, [title]);
+    loadDocument(cvId, initialTitle, initialTemplateName, initialDocument)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cvId])
 
-  const updateTitle = useCallback((t: string) => {
-    setTitle(t);
-    setSaved(false);
-    clearTimeout(autoSaveTimer.current);
-    autoSaveTimer.current = setTimeout(() => saveCv(cvData, t), 1500);
-  }, [saveCv, cvData]);
+  // ── Keyboard shortcuts ───────────────────────────────────────
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "z") {
+        e.preventDefault()
+        if (e.shiftKey) redo()
+        else undo()
+      }
+    }
+    window.addEventListener("keydown", handler)
+    return () => window.removeEventListener("keydown", handler)
+  }, [undo, redo])
 
-  const handleSectionReorder = (newOrder: string[]) => {
-    setSectionOrder(newOrder);
-    updateCvData((prev) => ({ ...prev, sectionOrder: newOrder }));
-  }
+  // ── Auto-save (debounce 1.5s) ────────────────────────────────
+  useEffect(() => {
+    if (saved) return
+    clearTimeout(autoSaveTime.current)
+    autoSaveTime.current = setTimeout(async () => {
+      setSaving(true)
+      try {
+        if (currentCvId === "new") {
+          const newId = await createCvAction(templateName, document as any, title)
+          setCurrentCvId(newId)
+          window.history.replaceState(null, "", `/editor/${newId}`)
+        } else {
+          await updateCvAction(currentCvId, document as any, title, templateName)
+        }
+        setSaved(true)
+      } finally {
+        setSaving(false)
+      }
+    }, 1500)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [document, title, saved])
 
-  const sections: { id: Section; label: string; icon: string }[] = [
-    { id: "personal", label: "Hồ sơ", icon: "" },
-    { id: "experience", label: "Kinh nghiệm", icon: "" },
-    { id: "education", label: "Học vấn", icon: "" },
-    { id: "skills", label: "Kỹ năng", icon: "" },
-  ];
-
-  const renderSection = (id: string) => (
-    <div id={`section-${id}`}>
-      <EditorForm
-        key={id}
-        section={id as Section}
-        cvData={cvData}
-        onUpdate={updateCvData}
-      />
-    </div>
-  );
+  // ── Print-based PDF export ───────────────────────────────────
+  const handleExportPdf = useCallback(async () => {
+    setIsExporting(true)
+    await new Promise((r) => setTimeout(r, 80))
+    window.print()
+    setIsExporting(false)
+  }, [])
 
   return (
-    <div className="editor-shell">
+    <div className="flex flex-col h-screen print:h-auto print:block bg-slate-50 dark:bg-slate-900 overflow-hidden print:overflow-visible font-sans">
       <EditorToolbar
         title={title}
-        onTitleChange={updateTitle}
-        onSave={() => saveCv(cvData, title)}
+        onTitleChange={setTitle}
+        onSave={() => {}}
         saving={saving}
         saved={saved}
-        cvId={cvId}
+        cvId={currentCvId}
         onExportPdf={handleExportPdf}
         isExporting={isExporting}
+        onUndo={undo}
+        onRedo={redo}
+        canUndo={canUndo()}
+        canRedo={canRedo()}
+        onShowTemplates={() => setShowTemplates(true)}
       />
-
-      <div className="editor-body">
-        {/* Panel trái: Section tabs + Form */}
-        <aside className="editor-panel-left">
-          <nav className="editor-section-tabs">
-            {sections.map((s) => (
-              <button
-                key={s.id}
-                className={`editor-tab${activeSection === s.id ? " active" : ""}`}
-                onClick={() => {
-                  setSection(s.id);
-                  document
-                    .getElementById(`section-${s.id}`)
-                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
-              >
-                <span>{s.icon}</span>
-                <span>{s.label}</span>
-              </button>
+      <div className="flex flex-1 overflow-hidden print:overflow-visible print:block">
+        {/* ── Left panel: block structure ── */}
+        <aside className="print:hidden w-[300px] flex-shrink-0 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col z-10 shadow-sm">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+            <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+              <Layers size={16} className="text-indigo-500" />
+              Cấu trúc CV
+            </div>
+            <span className="inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold text-indigo-700 bg-indigo-100 rounded-full">
+              {(document?.columns ?? []).reduce((sum, col) => sum + col.blocks.length, 0)} block
+            </span>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-3">
+            {(document?.columns ?? []).map((col, idx) => (
+              <div key={col.id} className="mb-4 last:mb-0">
+                {(document?.columns ?? []).length > 1 && (
+                  <div className="flex items-center justify-between px-1 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    <span>Cột {idx + 1}</span>
+                    <span className="opacity-60">{Math.round(col.width * 100)}%</span>
+                  </div>
+                )}
+                <BlockCanvas columnId={col.id} />
+              </div>
             ))}
-          </nav>
-
-          <div className="editor-form-area">
-            <SortableSectionList
-              items={sectionOrder}
-              onReorder={handleSectionReorder}
-              renderItem={(id) => (
-                <SortableItem key={id} id={id} showHandle={id !== "personal"}>
-                  {renderSection(id)}
-                </SortableItem>
-              )}
-            />
+            {(document?.columns ?? []).length === 0 && (
+              <div className="flex flex-col items-center justify-center h-32 text-slate-400 dark:text-slate-500">
+                <p className="text-sm">Chưa có cột nào.</p>
+                <p className="text-xs mt-1">Hãy chọn Template để bắt đầu.</p>
+              </div>
+            )}
           </div>
         </aside>
 
-        {/* Panel phải: Preview A4 */}
-        <div className="editor-panel-right">
-          <div className="editor-preview-wrapper">
-            <CvPreview data={cvData} template={initialTemplate} />
-          </div>
-        </div>
+        {/* ── Center panel: editable CV preview ── */}
+        <main className="flex-1 overflow-y-auto print:overflow-visible bg-slate-50 dark:bg-slate-900 print:bg-white relative flex justify-center py-10 px-4 print:p-0 print:block editor-panel-center">
+          <CvPreview />
+        </main>
       </div>
+      {showTemplates && <TemplatePicker onClose={() => setShowTemplates(false)} />}
     </div>
-  );
+  )
 }
