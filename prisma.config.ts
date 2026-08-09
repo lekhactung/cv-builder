@@ -2,9 +2,9 @@ import path from "node:path";
 import fs from "node:fs";
 import { defineConfig } from "prisma/config";
 
-const envPath = path.join(process.cwd(), ".env");
-if (fs.existsSync(envPath)) {
-  for (const line of fs.readFileSync(envPath, "utf-8").split("\n")) {
+function loadEnvFile(filePath: string) {
+  if (!fs.existsSync(filePath)) return;
+  for (const line of fs.readFileSync(filePath, "utf-8").split("\n")) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#")) continue;
     const eqIdx = trimmed.indexOf("=");
@@ -14,6 +14,10 @@ if (fs.existsSync(envPath)) {
     if (key && !process.env[key]) process.env[key] = val;
   }
 }
+
+// Load .env first, then .env.local (local overrides base)
+loadEnvFile(path.join(process.cwd(), ".env"));
+loadEnvFile(path.join(process.cwd(), ".env.local"));
 
 const dbUrl = process.env.DIRECT_URL || process.env.DATABASE_URL!;
 
