@@ -38,12 +38,13 @@ export function SortableItem({ id, children, showHandle }: Props) {
           aria-label="Kéo để sắp xếp"
           tabIndex={-1}
           type="button"
+          style={{ touchAction: "none" }}
         >
-          <GripVertical size={20} />
+          <GripVertical size={16} />
         </button>
       ) : (
-        <div className="sortable-drag-handle-placeholder"></div>
-      )};
+        <div className="sortable-drag-handle-placeholder" />
+      )}
       <div className="sortable-item-content">{children}</div>
     </div>
   );

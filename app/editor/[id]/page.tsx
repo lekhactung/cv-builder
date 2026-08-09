@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { CvDataSchema } from "@/lib/schemas/cv.schema";
+import { CvDocumentSchema } from "@/lib/schemas/block.schema";
 import EditorShell from "@/components/editor/EditorShell";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -27,8 +27,8 @@ export default async function EditorPage({
             <EditorShell
                 cvId="new"
                 initialTitle="CV Không Tiêu Đề"
-                initialData={CvDataSchema.parse({})}
-                initialTemplate={template ?? "Modern"}
+                initialTemplateName={template || "Modern"}
+                initialDocument={CvDocumentSchema.parse({})}
             />
         );
     }
@@ -38,14 +38,14 @@ export default async function EditorPage({
 
     if (!cv) notFound();
 
-    const cvData = CvDataSchema.parse(cv.data ?? {});
+    const cvData = CvDocumentSchema.parse(cv.data ?? {});
 
     return (
         <EditorShell
             cvId={cv.id}
             initialTitle={cv.title}
-            initialData={cvData}
-            initialTemplate={cv.template}
+            initialTemplateName={cv.template}
+            initialDocument={cvData}
         />
     );
 }
