@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache"
 import { CvDataSchema } from "../schemas/cv.schema";
 import { auth } from "@/auth";
 import { CvDocumentSchema } from "../schemas/block.schema";
+import { Prisma } from "@prisma/client";
 
 export async function deleteCvAction(id: string) {
     const session = await auth();
@@ -46,7 +47,7 @@ export async function createCvAction(
         data: {
             title: initialTitle,
             template: templateId,
-            data: validatedData as any,
+            data: validatedData as Prisma.InputJsonValue,
             userId: session.user.id,
         }
     })
@@ -68,7 +69,7 @@ export async function updateCvAction(id: string, data: unknown, title: string, t
             userId: session.user.id
         },
         data: {
-            data: validatedData as any,
+            data: validatedData as Prisma.InputJsonValue,
             title: validTitle,
             ...(template && { template })
         },
@@ -78,12 +79,15 @@ export async function updateCvAction(id: string, data: unknown, title: string, t
 }
 
 export async function getCvAction(id: string) {
-    const cv = await prisma.cV.findUnique({ where: { id } })
+    const session = await auth();
+    if (!session?.user?.id) throw new Error("Chưa đăng nhập");
+    const cv = await prisma.cV.findUnique({ where: { id, userId: session.user.id } })
     if (!cv) return null
 
     const rawData = cv.data as Record<string, unknown>
     if (rawData.columns) {
         const doc = CvDocumentSchema.parse(rawData)
-        return { ...cv, document: doc, isBlockBased: false }
+        return { ...cv, document: doc, isBlockBased: true }
     }
+    return null
 }
