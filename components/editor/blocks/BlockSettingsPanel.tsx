@@ -12,8 +12,8 @@ export default function BlockSettingsPanel() {
     const { document, selectedBlockId, selectedColumnId, updateBlock } = useEditorStore()
     if (!selectedBlockId || !selectedColumnId) {
         return (
-            <div style={{ padding: "2rem 1 rem", textAlign: "center", color: "var(--text-muted)" }}>
-                <p>Chọn một block để chỉnh sửa.</p>
+            <div className="px-8 py-8 text-center text-slate-400 dark:text-slate-500">
+                <p className="text-sm">Chọn một block để chỉnh sửa.</p>
             </div>
         )
     }
@@ -27,17 +27,17 @@ export default function BlockSettingsPanel() {
         updateBlock(selectedColumnId, selectedBlockId, (b) => ({ ...b, data: newData } as Block))
 
     return (
-        <div style={{ padding: "1rem", overflowY: "auto", height: "100%" }}>
-            
+        <div className="p-4 overflow-y-auto h-full">
+
             {block.type === "text" && <TextBlockSettings data={block.data as any} onChange={handleChange} />}
             {block.type === "timeline" && <TimeLineBlockSettings data={block.data as any} onChange={handleChange} />}
             {block.type === "skills" && <SkillsBlockSettings data={block.data as any} onChange={handleChange} />}
             {block.type === "tags" && <TagsBlockSettings data={block.data as any} onChange={handleChange} />}
             {block.type === "links" && <LinksBlockSettings data={block.data as any} onChange={handleChange} />}
             {block.type === "divider" && <DividerBlockSettings data={block.data as any} onChange={handleChange} />}
-         
+
             {block.type === "header" && (
-                <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", padding: "0.5rem" }}>
+                <p className="text-sm text-slate-400 dark:text-slate-500 px-2 py-2">
                     Chỉnh sửa thông tin cá nhân trong panel bên trái.
                 </p>
             )}
@@ -51,15 +51,12 @@ export default function BlockSettingsPanel() {
                         value={(block.data as any).height ?? 16}
                         onChange={(e) => handleChange({ height: Number(e.target.value) })}
                     />
-                    <div style={{
-                        marginTop: "0.75rem",
-                        height: `${(block.data as any).height ?? 16}px`,
-                        background: "var(--primary-dim)",
-                        border: "1px dashed var(--primary)",
-                        borderRadius: "var(--radius-sm)",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                    }}>
-                        <span style={{ fontSize: "0.75rem", color: "var(--primary)" }}>
+                    {/* height is dynamic (JS value) — must keep inline style for this one property */}
+                    <div
+                        className="mt-3 border border-dashed border-violet-400 dark:border-violet-500 rounded bg-violet-50 dark:bg-violet-950/30 flex items-center justify-center"
+                        style={{ height: `${(block.data as any).height ?? 16}px` }}
+                    >
+                        <span className="text-xs text-violet-500 dark:text-violet-400">
                             {(block.data as any).height ?? 16}px
                         </span>
                     </div>

@@ -10,16 +10,16 @@ interface Props {
 }
 
 const ICON_PRESETS = [
-    { value: "link", label: "🔗 Link" },
-    { value: "github", label: "🐙 GitHub" },
-    { value: "linkedin", label: "💼 LinkedIn" },
-    { value: "twitter", label: "🐦 Twitter" },
-    { value: "email", label: "✉️ Email" },
-    { value: "phone", label: "📞 Điện thoại" },
-    { value: "website", label: "🌐 Website" },
-    { value: "youtube", label: "▶️ YouTube" },
-    { value: "behance", label: "🎨 Behance" },
-    { value: "dribbble", label: "🏀 Dribbble" },
+    { value: "link", label: "Link" },
+    { value: "github", label: "GitHub" },
+    { value: "linkedin", label: "LinkedIn" },
+    { value: "twitter", label: "Twitter" },
+    { value: "email", label: "Email" },
+    { value: "phone", label: "Điện thoại" },
+    { value: "website", label: "Website" },
+    { value: "youtube", label: "YouTube" },
+    { value: "behance", label: "Behance" },
+    { value: "dribbble", label: "Dribbble" },
 ]
 
 const newItem = (): LinkItem => ({

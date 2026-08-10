@@ -1,7 +1,7 @@
 "use client"
 import { Block } from "@/lib/schemas/block.schema"
 import { useEditorStore } from "@/lib/stores/editorStore"
-import { User, AlignLeft, CalendarRange, Zap, Tags, Link as LinkIcon, Minus, MoveVertical, Eye, EyeOff, Copy, Trash2 } from "lucide-react"
+import { User, AlignLeft, CalendarRange, Zap, Tags, Link as LinkIcon, Minus, MoveVertical, Eye, EyeOff, Copy, Trash2, GripVertical } from "lucide-react"
 
 interface Props {
     block: Block
@@ -10,14 +10,14 @@ interface Props {
 }
 
 const TYPE_STYLE: Record<string, { accent: string; icon: React.ReactNode }> = {
-    header:  { accent: "border-indigo-500", icon: <User size={16} className="text-indigo-500" /> },
-    text:    { accent: "border-blue-500", icon: <AlignLeft size={16} className="text-blue-500" /> },
-    timeline:{ accent: "border-emerald-500", icon: <CalendarRange size={16} className="text-emerald-500" /> },
-    skills:  { accent: "border-amber-500", icon: <Zap size={16} className="text-amber-500" /> },
-    tags:    { accent: "border-cyan-500", icon: <Tags size={16} className="text-cyan-500" /> },
-    links:   { accent: "border-rose-500", icon: <LinkIcon size={16} className="text-rose-500" /> },
+    header: { accent: "border-indigo-500", icon: <User size={16} className="text-indigo-500" /> },
+    text: { accent: "border-blue-500", icon: <AlignLeft size={16} className="text-blue-500" /> },
+    timeline: { accent: "border-emerald-500", icon: <CalendarRange size={16} className="text-emerald-500" /> },
+    skills: { accent: "border-amber-500", icon: <Zap size={16} className="text-amber-500" /> },
+    tags: { accent: "border-cyan-500", icon: <Tags size={16} className="text-cyan-500" /> },
+    links: { accent: "border-rose-500", icon: <LinkIcon size={16} className="text-rose-500" /> },
     divider: { accent: "border-slate-500", icon: <Minus size={16} className="text-slate-500" /> },
-    spacer:  { accent: "border-slate-400", icon: <MoveVertical size={16} className="text-slate-400" /> },
+    spacer: { accent: "border-slate-400", icon: <MoveVertical size={16} className="text-slate-400" /> },
 }
 
 export default function BlockCard({ block, columnId, onClick }: Props) {
@@ -27,21 +27,21 @@ export default function BlockCard({ block, columnId, onClick }: Props) {
 
     return (
         <div
-            className={`group flex items-center justify-between p-3 mb-2 rounded-lg border transition-all cursor-pointer bg-white relative overflow-hidden ${
-                isSelected 
-                    ? "border-indigo-500 shadow-sm ring-1 ring-indigo-500" 
+            className={`group flex items-center justify-between p-3 mb-2 rounded-lg border transition-all cursor-pointer bg-white relative overflow-hidden ${isSelected
+                    ? "border-indigo-500 shadow-sm ring-1 ring-indigo-500"
                     : "border-slate-200 hover:border-slate-300 hover:shadow-sm"
-            } ${!block.visible ? "opacity-60 grayscale-[0.5]" : ""}`}
+                } ${!block.visible ? "opacity-60 grayscale-[0.5]" : ""}`}
             onClick={onClick}
         >
             {/* Accent left bar */}
             <div className={`absolute left-0 top-0 bottom-0 w-1 ${cfg.accent} border-l-4`} />
 
-            <div className="flex items-center gap-3 pl-2 flex-1 min-w-0">
+            <div className="flex items-center gap-2 pl-2 flex-1 min-w-0">
+                <GripVertical size={15} className="text-slate-300 cursor-grab shrink-0 opacity-50 group-hover:opacity-100 transition-opacity" />
                 <div className="flex items-center justify-center w-8 h-8 rounded-md bg-slate-50 border border-slate-100 shrink-0">
                     {cfg.icon}
                 </div>
-                
+
                 <div className="flex flex-col min-w-0">
                     <span className="text-sm font-semibold text-slate-800 truncate">
                         {block.label || block.type}
@@ -52,8 +52,8 @@ export default function BlockCard({ block, columnId, onClick }: Props) {
                 </div>
             </div>
 
-            {/* Actions (visible on hover) */}
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            {/* Actions (visible on hover or always on touch devices) */}
+            <div className="flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                 <button
                     className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
                     onClick={(e) => { e.stopPropagation(); toggleBlockVisible(columnId, block.id) }}
@@ -70,7 +70,12 @@ export default function BlockCard({ block, columnId, onClick }: Props) {
                 </button>
                 <button
                     className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                    onClick={(e) => { e.stopPropagation(); removeBlock(columnId, block.id) }}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (window.confirm("Bạn có chắc chắn muốn xóa block này?")) {
+                            removeBlock(columnId, block.id)
+                        }
+                    }}
                     title="Xóa"
                 >
                     <Trash2 size={14} />

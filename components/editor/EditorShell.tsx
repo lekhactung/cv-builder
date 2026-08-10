@@ -18,7 +18,7 @@ interface Props {
 
 export default function EditorShell({ cvId, initialTitle, initialTemplateName, initialDocument }: Props) {
   const {
-    document, title, saved, saving, templateName,
+    document, title, saved, saving, saveError, lastSavedAt, templateName,
     loadDocument, setTitle, setSaved, setSaving,
     undo, redo, canUndo, canRedo,
   } = useEditorStore()
@@ -28,13 +28,15 @@ export default function EditorShell({ cvId, initialTitle, initialTemplateName, i
   const [isExporting, setIsExporting] = useState(false)
   const autoSaveTime = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
-  // ── Load document ────────────────────────────────────────────
+  const templateNameRef = useRef(templateName)
+  const currentCvIdRef = useRef(currentCvId)
+  useEffect(() => { templateNameRef.current = templateName }, [templateName])
+  useEffect(() => { currentCvIdRef.current = currentCvId }, [currentCvId])
+
   useEffect(() => {
     loadDocument(cvId, initialTitle, initialTemplateName, initialDocument)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cvId])
 
-  // ── Keyboard shortcuts ───────────────────────────────────────
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "z") {
@@ -47,29 +49,35 @@ export default function EditorShell({ cvId, initialTitle, initialTemplateName, i
     return () => window.removeEventListener("keydown", handler)
   }, [undo, redo])
 
-  // ── Auto-save (debounce 1.5s) ────────────────────────────────
   useEffect(() => {
     if (saved) return
     clearTimeout(autoSaveTime.current)
     autoSaveTime.current = setTimeout(async () => {
       setSaving(true)
+      useEditorStore.getState().setSaveError(null)
+    
+      const latestCvId = currentCvIdRef.current
+      const latestTemplateName = templateNameRef.current
       try {
-        if (currentCvId === "new") {
-          const newId = await createCvAction(templateName, document as any, title)
+        if (latestCvId === "new") {
+          const newId = await createCvAction(latestTemplateName, document as any, title)
           setCurrentCvId(newId)
+          currentCvIdRef.current = newId
           window.history.replaceState(null, "", `/editor/${newId}`)
         } else {
-          await updateCvAction(currentCvId, document as any, title, templateName)
+          await updateCvAction(latestCvId, document as any, title, latestTemplateName)
         }
         setSaved(true)
+        useEditorStore.getState().setLastSavedAt(new Date())
+      } catch (err) {
+        console.error("Autosave failed:", err)
+        useEditorStore.getState().setSaveError("Lỗi kết nối. Không thể lưu CV.")
       } finally {
         setSaving(false)
       }
     }, 1500)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [document, title, saved])
 
-  // ── Print-based PDF export ───────────────────────────────────
   const handleExportPdf = useCallback(async () => {
     setIsExporting(true)
     await new Promise((r) => setTimeout(r, 80))
@@ -82,9 +90,14 @@ export default function EditorShell({ cvId, initialTitle, initialTemplateName, i
       <EditorToolbar
         title={title}
         onTitleChange={setTitle}
-        onSave={() => {}}
+        onSave={() => {
+          clearTimeout(autoSaveTime.current)
+          useEditorStore.getState().setSaved(false)
+        }}
         saving={saving}
         saved={saved}
+        saveError={saveError}
+        lastSavedAt={lastSavedAt}
         cvId={currentCvId}
         onExportPdf={handleExportPdf}
         isExporting={isExporting}
@@ -106,7 +119,7 @@ export default function EditorShell({ cvId, initialTitle, initialTemplateName, i
               {(document?.columns ?? []).reduce((sum, col) => sum + col.blocks.length, 0)} block
             </span>
           </div>
-          
+
           <div className="flex-1 overflow-y-auto p-3">
             {(document?.columns ?? []).map((col, idx) => (
               <div key={col.id} className="mb-4 last:mb-0">

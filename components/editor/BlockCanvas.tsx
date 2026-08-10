@@ -55,7 +55,7 @@ export default function BlockCanvas({ columnId }: Props) {
                     )}
                 </SortableContext>
             </DndContext>
-            <button 
+            <button
                 className="flex items-center justify-center gap-2 w-full p-2.5 text-sm font-semibold text-slate-500 bg-white border border-dashed border-slate-300 rounded-lg hover:text-indigo-600 hover:border-indigo-400 hover:bg-indigo-50 transition-all"
                 onClick={() => setShowPicker(true)}
             >
