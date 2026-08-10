@@ -21,7 +21,7 @@ export function createDefaultBlock(type: BlockType): Block {
             data: SkillsBlockData.parse({})
         },
         tags: {
-            label: "Kỹ năng",
+            label: "Công nghệ",  
             data: TagsBlockData.parse({})
         },
         links: {
