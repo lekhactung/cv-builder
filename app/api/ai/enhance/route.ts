@@ -1,4 +1,4 @@
-import { google } from '@ai-sdk/google'
+import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { generateObject } from 'ai'
 import { z } from 'zod'
 import { NextResponse } from 'next/server'
@@ -9,6 +9,13 @@ export async function POST(req: Request) {
         const session = await auth();
         if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         const { text, type } = await req.json();
+
+        const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+        if (!apiKey) {
+            return NextResponse.json({ error: "Missing GOOGLE_GENERATIVE_AI_API_KEY on server. Please add it to Vercel environment variables." }, { status: 500 });
+        }
+
+        const google = createGoogleGenerativeAI({ apiKey });
 
         let systemPrompt = "Bạn là chuyên gia viết CV nhân sự cấp cao. Nhiệm vụ của bạn là viết lại đoạn văn bản của ứng viên cho chuyên nghiệp hơn. TUYỆT ĐỐI KHÔNG giải thích, không chào hỏi, không khuyên bảo. CHỈ trả về đúng 3 lựa chọn (options) khác nhau.";
         if (type === "summary") {
