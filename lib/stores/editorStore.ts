@@ -11,6 +11,9 @@ interface EditorState {
     saved: boolean
     saving: boolean
 
+    saveError: string | null
+    lastSavedAt: Date | null
+
     selectedBlockId: string | null
     selectedColumnId: string | null
 
@@ -21,6 +24,8 @@ interface EditorState {
     setTemplateName: (name: string) => void
     setSaved: (saved: boolean) => void
     setSaving: (saving: boolean) => void
+    setSaveError: (error: string | null) => void
+    setLastSavedAt: (date: Date | null) => void
     selectBlock: (blockId: string | null, columnId?: string | null) => void
 
     updateDocument: (updater: (doc: CvDocument) => CvDocument) => void
@@ -51,14 +56,20 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     document: { layout: "single", theme: { primaryColor: "#7c3aed", accentColor: "#f43f5e", fontFamily: "Inter", fontSize: 14, lineHeight: 1.5 }, columns: [] },
     saved: true,
     saving: false,
+    saveError: null,
+    lastSavedAt: null,
+
     selectedBlockId: null,
     selectedColumnId: null,
     past: [],
     future: [],
+
     setTitle: (title) => set({ title, saved: false }),
-    setTemplateName: (name) => set({ templateName: name, saved: false }),
+    setTemplateName: (templateName) => set({ templateName, saved: false }),
     setSaved: (saved) => set({ saved }),
     setSaving: (saving) => set({ saving }),
+    setSaveError: (saveError) => set({ saveError }),
+    setLastSavedAt: (lastSavedAt) => set({ lastSavedAt }),
     selectBlock: (blockId, columnId = null) => set({ selectedBlockId: blockId, selectedColumnId: columnId }),
 
     updateDocument: (updater) => {
@@ -121,7 +132,10 @@ export const useEditorStore = create<EditorState>((set, get) => ({
             columns: doc.columns.map((col) => {
                 if (col.id !== columnId) return col
                 const idx = col.blocks.findIndex((b) => b.id === blockId)
-                const clone = { ...col.blocks[idx], id: crypto.randomUUID() }
+               const clone: Block = {
+                    ...structuredClone(col.blocks[idx]),
+                    id: crypto.randomUUID(),
+                }
                 const blocks = [...col.blocks]
                 blocks.splice(idx + 1, 0, clone)
                 return { ...col, blocks }
