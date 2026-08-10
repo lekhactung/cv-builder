@@ -69,7 +69,7 @@ export const sidebarLeftTemplate = (): CvDocument => ({
 
 export const harvardTemplate = (): CvDocument => ({
   layout: "harvard",
-  theme: { primaryColor: "#000000", accentColor: "#333333", fontFamily: "Georgia, serif", fontSize: 13, lineHeight: 1.4 },
+  theme: { primaryColor: "#000000", accentColor: "#333333", fontFamily: "Times New Roman, serif", fontSize: 13, lineHeight: 1.4 },
   columns: [{
     id: crypto.randomUUID(),
     width: 1,
