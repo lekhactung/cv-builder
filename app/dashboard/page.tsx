@@ -4,7 +4,7 @@ import Link from "next/link";
 import StatCard from "@/components/dashboard/StatCard";
 import CvCard from "@/components/dashboard/CvCard";
 import EmptyState from "@/components/dashboard/EmptyState";
-import { FileText, Activity } from "lucide-react";
+import { FileText, Activity, Plus } from "lucide-react";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -43,8 +43,9 @@ export default async function DashboardPage() {
             Quản lý và tạo CV chuyên nghiệp của bạn
           </p>
         </div>
-        <Link href="/editor/new?template=Modern" className="btn btn-primary btn-md">
-          + Tạo CV mới
+        <Link href="/editor/new?template=Modern" className="btn btn-primary btn-md group">
+          <Plus size={18} className="transition-transform group-hover:rotate-90" /> 
+          Tạo CV mới
         </Link>
       </div>
 

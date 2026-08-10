@@ -23,7 +23,7 @@ export default function CvCard({ id, title, updatedAt, template = "Modern" }: Cv
       const res = await fetch(`/api/cvs/${id}`);
       if (!res.ok) throw new Error("Không thể tải dữ liệu CV");
       const { cv } = await res.json();
-      
+
       const cvData = typeof cv.data === "string" ? JSON.parse(cv.data) : cv.data;
       await exportPdf(cvData, cv.template || template, title);
     } catch (error) {
@@ -33,7 +33,7 @@ export default function CvCard({ id, title, updatedAt, template = "Modern" }: Cv
       setIsFetchingData(false);
     }
   };
-  
+
   const handleDelete = () => {
     const confirmDelete = window.confirm(`Bạn có chắc muốn xóa CV "${title}" không? Hành động này không thể hoàn tác.`);
 
@@ -71,7 +71,7 @@ export default function CvCard({ id, title, updatedAt, template = "Modern" }: Cv
         <Link href={`/editor/${id}`} className="btn btn-primary btn-sm">
           Chỉnh sửa
         </Link>
-        <button 
+        <button
           className="btn btn-ghost btn-sm text-gray-500 hover:text-primary hover:bg-indigo-50"
           onClick={handleDownload}
           disabled={isFetchingData || isExporting}
