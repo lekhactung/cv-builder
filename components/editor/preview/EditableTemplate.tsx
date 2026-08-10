@@ -3,6 +3,7 @@ import React, { useRef, useLayoutEffect, useCallback } from "react"
 import { useEditorStore } from "@/lib/stores/editorStore"
 import { Block, CvDocument } from "@/lib/schemas/block.schema"
 import { Plus, X } from "lucide-react"
+import AIEnhanceButton from "@/components/AIEnhanceButton"
 
 // ── Tiny ID helper ────────────────────────────────────────────
 const uid = () => crypto.randomUUID()
@@ -51,12 +52,10 @@ function E({
                 if (text !== (value ?? "")) onSave(text)
             }}
             onKeyDown={(e: React.KeyboardEvent) => {
-                // single-line: Enter = blur (save)
                 if (!multiline && e.key === "Enter") {
                     e.preventDefault()
-                    ;(e.target as HTMLElement).blur()
+                        ; (e.target as HTMLElement).blur()
                 }
-                // stop propagation so DnD doesn't interfere
                 e.stopPropagation()
             }}
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
@@ -64,7 +63,6 @@ function E({
     )
 }
 
-// ── Section title with editable label ────────────────────────
 function SectionTitle({ blockId, columnId, label, icon }: {
     blockId: string; columnId: string; label: string; icon?: string
 }) {
@@ -80,7 +78,6 @@ function SectionTitle({ blockId, columnId, label, icon }: {
     )
 }
 
-// ── Main EditableTemplate ─────────────────────────────────────
 export default function EditableTemplate() {
     const { document, updateBlock, selectBlock, selectedBlockId } = useEditorStore()
     const { columns, theme } = document
@@ -127,7 +124,6 @@ export default function EditableTemplate() {
     )
 }
 
-// ── Block dispatcher ──────────────────────────────────────────
 interface BProps {
     block: Block
     columnId: string
@@ -155,7 +151,6 @@ function EditableBlockRenderer({ block, columnId, theme, isSelected, onSelect, p
     }
 
     switch (block.type) {
-        // ── Header ──────────────────────────────────────────
         case "header":
             return (
                 <div className={`cv-header ${wrapCls}`} onClick={onSelect}>
@@ -176,19 +171,28 @@ function EditableBlockRenderer({ block, columnId, theme, isSelected, onSelect, p
                 </div>
             )
 
-        // ── Text / Summary ───────────────────────────────────
         case "text":
             return (
                 <div className={`cv-section ${wrapCls}`} onClick={onSelect}>
                     {block.label && (
                         <SectionTitle blockId={block.id} columnId={columnId} label={block.label} />
                     )}
-                    <E value={d.content} onSave={(v) => patch({ content: v })}
-                        className="cv-summary" placeholder="Nhập nội dung..." multiline />
+                    {/* Fix #5: xóa <E> thừa — giờ chỉ có 1 contenteditable cho content,
+                        AI button được đặt ngay cạnh editor thực sự (cv-summary) */}
+                    <div className="relative group/ai">
+                        <E value={d.content} onSave={(v) => patch({ content: v })}
+                            className="cv-summary" placeholder="Nhập nội dung..." multiline />
+                        <div className="absolute right-2 top-2 opacity-0 group-hover/ai:opacity-100 transition-opacity print:hidden">
+                            <AIEnhanceButton
+                                currentText={d.content}
+                                type="summary"
+                                onAccept={(newText) => patch({ content: newText })}
+                            />
+                        </div>
+                    </div>
                 </div>
             )
 
-        // ── Timeline (Experience / Education) ────────────────
         case "timeline":
             return (
                 <div className={`cv-section ${wrapCls} text-center [&_.cv-section-title]:text-center`} onClick={onSelect}>
@@ -197,9 +201,10 @@ function EditableBlockRenderer({ block, columnId, theme, isSelected, onSelect, p
                         <div key={item.id ?? idx} className="cv-item relative mt-4">
                             <div className="w-full relative text-center">
                                 <E value={item.title} onSave={(v) => patchItem("title", idx, v)}
-                                    className="cv-item-title block" placeholder="Vị trí / Tên trường" />
+                                    className="cv-item-title" placeholder="Vị trí / Tên trường" />
+                                <br />
                                 <E value={item.subtitle} onSave={(v) => patchItem("subtitle", idx, v)}
-                                    className="cv-item-subtitle block" placeholder="Công ty / Ngành học" />
+                                    className="cv-item-subtitle" placeholder="Công ty / Ngành học" />
                                 <div className="absolute right-0 top-0 flex items-center justify-end">
                                     <E value={item.startDate} onSave={(v) => patchItem("startDate", idx, v)}
                                         className="cv-item-date" placeholder="Từ" />
@@ -209,11 +214,20 @@ function EditableBlockRenderer({ block, columnId, theme, isSelected, onSelect, p
                                         className="cv-item-date" placeholder="Đến" />
                                     <button className="print:hidden text-red-500 opacity-0 group-hover/block:opacity-100 hover:bg-red-50 p-1 rounded transition-all ml-1"
                                         onClick={(e) => { e.stopPropagation(); removeItem(idx) }}
-                                        title="Xóa"><X size={14}/></button>
+                                        title="Xóa"><X size={14} /></button>
                                 </div>
                             </div>
-                            <E value={item.description} onSave={(v) => patchItem("description", idx, v)}
-                                className="cv-item-desc cv-summary block text-center mt-2" placeholder="Mô tả công việc, kết quả..." multiline />
+                             <div className="relative group/ai-desc">
+                                <E value={item.description} onSave={(v) => patchItem("description", idx, v)}
+                                    className="cv-item-desc cv-summary block text-center mt-2" placeholder="Mô tả công việc, kết quả..." multiline />
+                                <div className="absolute right-0 top-1 opacity-0 group-hover/ai-desc:opacity-100 transition-opacity print:hidden">
+                                    <AIEnhanceButton
+                                        currentText={item.description ?? ""}
+                                        type="experience"
+                                        onAccept={(v) => patchItem("description", idx, v)}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     ))}
                     <button className="print:hidden flex items-center gap-1 mt-2 text-xs font-medium text-indigo-600 opacity-0 group-hover/block:opacity-100 hover:bg-indigo-50 px-2 py-1 rounded transition-all w-fit" onClick={(e) => {
@@ -230,7 +244,6 @@ function EditableBlockRenderer({ block, columnId, theme, isSelected, onSelect, p
                 </div>
             )
 
-        // ── Skills ───────────────────────────────────────────
         case "skills":
             return (
                 <div className={`cv-section ${wrapCls}`} onClick={onSelect}>
@@ -244,7 +257,7 @@ function EditableBlockRenderer({ block, columnId, theme, isSelected, onSelect, p
                                     <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                                         <span className="cv-skill-level-label">{skill.level}%</span>
                                         <button className="print:hidden text-red-500 opacity-0 group-hover/block:opacity-100 hover:bg-red-50 p-0.5 rounded transition-all"
-                                            onClick={(e) => { e.stopPropagation(); removeItem(idx) }}><X size={14}/></button>
+                                            onClick={(e) => { e.stopPropagation(); removeItem(idx) }}><X size={14} /></button>
                                     </span>
                                 </div>
                                 <div className="cv-skill-bar-track">
@@ -267,7 +280,6 @@ function EditableBlockRenderer({ block, columnId, theme, isSelected, onSelect, p
                 </div>
             )
 
-        // ── Tags ─────────────────────────────────────────────
         case "tags":
             return (
                 <div className={`cv-section ${wrapCls}`} onClick={onSelect}>
@@ -285,7 +297,7 @@ function EditableBlockRenderer({ block, columnId, theme, isSelected, onSelect, p
                                     const tags = [...(d.tags ?? [])]
                                     tags.splice(idx, 1)
                                     patch({ tags })
-                                }}><X size={12}/></button>
+                                }}><X size={12} /></button>
                             </span>
                         ))}
                         <button className="print:hidden flex items-center justify-center w-6 h-6 rounded-full text-indigo-600 border border-dashed border-indigo-300 opacity-0 group-hover/block:opacity-100 hover:bg-indigo-50 transition-all" onClick={(e) => {
@@ -296,7 +308,6 @@ function EditableBlockRenderer({ block, columnId, theme, isSelected, onSelect, p
                 </div>
             )
 
-        // ── Links ─────────────────────────────────────────────
         case "links":
             return (
                 <div className={`cv-section ${wrapCls}`} onClick={onSelect}>
@@ -310,7 +321,7 @@ function EditableBlockRenderer({ block, columnId, theme, isSelected, onSelect, p
                             <E value={link.url} onSave={(v) => patchItem("url", idx, v)}
                                 className="cv-link-url" placeholder="URL" />
                             <button className="print:hidden text-red-500 opacity-0 group-hover/block:opacity-100 hover:bg-red-50 p-0.5 rounded transition-all ml-1"
-                                onClick={(e) => { e.stopPropagation(); removeItem(idx) }}><X size={14}/></button>
+                                onClick={(e) => { e.stopPropagation(); removeItem(idx) }}><X size={14} /></button>
                         </div>
                     ))}
                     <button className="print:hidden flex items-center gap-1 mt-2 text-xs font-medium text-indigo-600 opacity-0 group-hover/block:opacity-100 hover:bg-indigo-50 px-2 py-1 rounded transition-all" onClick={(e) => {
@@ -322,7 +333,6 @@ function EditableBlockRenderer({ block, columnId, theme, isSelected, onSelect, p
                 </div>
             )
 
-        // ── Divider / Spacer ─────────────────────────────────
         case "divider":
             return <hr className="cv-divider" style={{ borderStyle: d.style }} />
         case "spacer":
