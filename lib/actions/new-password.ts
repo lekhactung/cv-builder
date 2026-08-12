@@ -1,11 +1,12 @@
 "use server"
-
 import { prisma } from "@/lib/prisma"
+import { createHash } from "crypto"
 import bcrypt from "bcryptjs"
 
 export const updatePassword = async (email: string, code: string, newPassword: string) => {
+    const hashedCode = createHash("sha256").update(code).digest("hex");
     const existingToken = await prisma.passwordResetToken.findFirst({
-        where: { email, token: code }
+        where: { email, token: hashedCode }
     });
 
     if (!existingToken) {
