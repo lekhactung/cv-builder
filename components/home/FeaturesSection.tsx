@@ -70,7 +70,7 @@ export default function FeaturesSection() {
           </div>
 
           {/* Job Match */}
-          <div className="feature-card" id="feature-match">
+          {/* <div className="feature-card" id="feature-match">
             <div className="feature-icon">
               <Search size={28} className="text-primary" />
             </div>
@@ -88,10 +88,10 @@ export default function FeaturesSection() {
                 <span className="tag-ok">✓ Node.js</span>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Templates */}
-          <div className="feature-card" id="feature-template">
+          {/* <div className="feature-card" id="feature-template">
             <div className="feature-icon">
               <Palette size={28} className="text-primary" />
             </div>
@@ -103,7 +103,7 @@ export default function FeaturesSection() {
               <div className="template-mini creative"></div>
               <div className="template-mini minimal"></div>
             </div>
-          </div>
+          </div> */}
 
           {/* Cover Letter */}
           <div className="feature-card" id="feature-cover">
@@ -115,13 +115,13 @@ export default function FeaturesSection() {
           </div>
 
           {/* Export */}
-          <div className="feature-card" id="feature-export">
+          {/* <div className="feature-card" id="feature-export">
             <div className="feature-icon">
               <DownloadCloud size={28} className="text-primary" />
             </div>
             <h3>Export đa định dạng</h3>
             <p>PDF pixel-perfect, DOCX, shareable link, QR Code và embed cho website cá nhân.</p>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>
