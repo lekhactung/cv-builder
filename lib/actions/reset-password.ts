@@ -1,5 +1,6 @@
 "use server"
 import { prisma } from "@/lib/prisma"
+import { createHash } from "crypto"
 import { generatedPasswordResetToken } from "@/lib//token"
 import { Resend } from "resend"
 
@@ -14,7 +15,7 @@ export const resetPassword = async (email: string) => {
 
     const passwordResetToken = await generatedPasswordResetToken(email);
 
-    const resetLink = `${process.env.AUTH_URL}/auth/new-password?token=${passwordResetToken.token}`;
+    const resetLink = `${process.env.AUTH_URL}/auth/new-password?token=${passwordResetToken}`;
     try {
         await resend.emails.send({
             from: "CV Builder <onboarding@resend.dev>",
@@ -23,7 +24,7 @@ export const resetPassword = async (email: string) => {
             html: `
                 <h2>Xin chào,</h2>
                 <p>Bạn đã yêu cầu đặt lại mật khẩu cho tài khoản CV Builder.</p>
-                <p>Mã xác nhận của bạn là: <strong style="font-size: 24px; color: #7C3AED;">${passwordResetToken.token}</strong></p>
+                <p>Mã xác nhận của bạn là: <strong style="font-size: 24px; color: #7C3AED;">${passwordResetToken}</strong></p>
                 <p>Mã này sẽ hết hạn sau 15 phút.</p>
             `
         })
@@ -41,8 +42,9 @@ export const resetPassword = async (email: string) => {
 }
 
 export const verifyResetCode = async (email: string, code: string) => {
+    const hashedCode = createHash("sha256").update(code).digest("hex");
     const existingToken = await prisma.passwordResetToken.findFirst({
-        where: { email, token: code }
+        where: { email, token: hashedCode }
     });
 
     if (!existingToken) {
