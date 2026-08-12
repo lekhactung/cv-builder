@@ -1063,7 +1063,7 @@ a:focus:not(:focus-visible) {
   background: var(--gradient-hero);
 }
 
-.hero>.container {
+.hero > .container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 4rem;
@@ -1072,6 +1072,8 @@ a:focus:not(:focus-visible) {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 /* Grid background */
@@ -1126,7 +1128,7 @@ a:focus:not(:focus-visible) {
 /* Hero content */
 .hero-content {
   position: relative;
-  z-index: 2;
+  z-index: 1;
 }
 
 .hero-badge {
@@ -1230,6 +1232,7 @@ a:focus:not(:focus-visible) {
   position: relative;
   width: 320px;
   animation: float 4s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .cv-mockup {
@@ -1381,6 +1384,7 @@ a:focus:not(:focus-visible) {
   border-radius: 14px;
   padding: 10px 14px;
   box-shadow: var(--shadow-lg);
+  pointer-events: none;
 }
 
 .score-ring {
@@ -1457,6 +1461,7 @@ a:focus:not(:focus-visible) {
   max-width: 220px;
   box-shadow: var(--shadow-lg);
   animation: float 4s ease-in-out infinite 1s;
+  pointer-events: none;
 }
 
 .suggestion-icon {
