@@ -123,7 +123,7 @@ export default function ForgotPasswordPage() {
             </button>
             <button
               type="button"
-              onClick={() => setStep(1)}
+              onClick={() => { setStep(1); setCode(""); setError(""); }}
               className="w-full py-2 text-sm text-violet-600 mt-2 hover:underline"
             >
               Sai email? Gửi lại
