@@ -109,7 +109,7 @@ export default function Header() {
                     {/* Lớp phủ trong suốt */}
                     <div
                       onClick={() => setDropdownOpen(false)}
-                      style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 999 }}
+                      style={{ position: "fixed", top: 64, left: 0, right: 0, bottom: 0, zIndex: 999 }}
                     />
 
                     {/* Hộp Menu */}
