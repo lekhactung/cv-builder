@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
         const google = createGoogleGenerativeAI({ apiKey });
 
-        let systemPrompt = "Bạn là chuyên gia viết CV nhân sự cấp cao. Nhiệm vụ của bạn là viết lại đoạn văn bản của ứng viên cho chuyên nghiệp hơn. TUYỆT ĐỐI KHÔNG giải thích, không chào hỏi, không khuyên bảo. CHỈ trả về đúng 3 lựa chọn (options) khác nhau.";
+        let systemPrompt = "Bạn là chuyên gia viết CV. Nhiệm vụ của bạn là viết lại đoạn văn bản của ứng viên cho chuyên nghiệp hơn. TUYỆT ĐỐI KHÔNG giải thích, không chào hỏi, không khuyên bảo. CHỈ trả về đúng 3 lựa chọn (options) khác nhau.";
         if (type === "summary") {
             systemPrompt += " Viết lại đoạn giới thiệu bản thân thành một đoạn văn ngắn gọn, súc tích, độ dài khoảng 3-4 câu.";
         } else if (type === "experience") {
