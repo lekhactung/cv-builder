@@ -4,7 +4,7 @@ import { useTransition, useState } from "react";
 import { deleteCvAction } from "@/lib/actions/cv";
 import { Trash2, Download } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
-import { usePdfExport } from "@/lib/pdf/usePdfExport";
+import { usePdfExport } from "@/lib/hooks/usePdfExport";
 
 interface CvCardProps {
   id: string;
