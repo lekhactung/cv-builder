@@ -2,7 +2,7 @@
 import { useState, useCallback } from "react"
 import { pdf } from "@react-pdf/renderer"
 import { CvData } from "../schemas/cv.schema"
-import { pdfTemplates } from "./templateRegistry"
+import { pdfTemplates } from "../pdf/templateRegistry"
 
 export function usePdfExport() {
     const [isExporting, setIsExporting] = useState(false);
