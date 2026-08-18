@@ -4,6 +4,74 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum PlanSlug {
+  FREE
+  PRO
+  PREMIUM
+}
+
+enum BillingInterval {
+  MONTHLY
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+  INCOMPLETE
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  EXPIRED
+  CANCELLED
+}
+
+enum CreditTransactionType {
+  PURCHASE
+  SUBSCRIPTION_GRANT
+  AI_GENERATION
+  AI_REWRITE
+  REFUND
+  ADMIN_ADJUSTMENT
+  EXPIRATION
+  ROLLOVER
+}
+
+enum PaymentProvider {
+  STRIPE
+  VNPAY
+  MOMO
+  ZALOPAY
+  MANUAL
+}
+
+enum AuditAction {
+  ADMIN_CREDIT_ADJUSTMENT
+  PLAN_UPDATED
+  SUBSCRIPTION_ACTIVATED
+  SUBSCRIPTION_CANCELLED
+  SUBSCRIPTION_EXPIRED
+  PAYMENT_COMPLETED
+  PAYMENT_REFUNDED
+  PAYMENT_STATUS_CHANGED
+  USER_ROLE_CHANGED
+  REFUND_REQUESTED
+  REFUND_COMPLETED
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -11,11 +79,18 @@ model User {
   emailVerified DateTime?
   password      String?
   image         String?
+  role          UserRole  @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  sessions      Session[]
-  cvs           CV[]
+
+  accounts     Account[]
+  sessions     Session[]
+  cvs          CV[]
+  subscription Subscription?
+  creditWallet CreditWallet?
+  payments     Payment[]
+  auditLogs    AuditLog[]    @relation("AuditLogUser")
+  adminActions AuditLog[]    @relation("AuditLogAdmin")
 }
 model Account {
   id                String  @id @default(cuid())
@@ -31,6 +106,7 @@ model Account {
   id_token          String? @db.Text
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([provider, providerAccountId])
 }
 model Session {
@@ -63,4 +139,147 @@ model PasswordResetToken {
   expires DateTime
   
   @@unique([email,token])
+}
+
+model Plan {
+  id                   String   @id @default(cuid())
+  name                 String
+  slug                 PlanSlug @unique
+  description          String?
+  priceMonthly         Int      @default(0)
+  priceYearly          Int      @default(0)
+  isActive             Boolean  @default(true)
+  sortOrder            Int      @default(0)
+  stripePriceIdMonthly String?
+  stripePriceIdYearly  String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  features      PlanFeature[]
+  templates     PlanTemplate[]
+  subscriptions Subscription[]
+  payments      Payment[]
+}
+
+model PlanFeature {
+  id     String  @id @default(cuid())
+  planId String
+  plan   Plan    @relation(fields: [planId], references: [id], onDelete: Cascade)
+  key    String
+  value  String
+  label  String?
+
+  @@unique([planId, key])
+  @@index([planId])
+}
+
+model PlanTemplate {
+  id         String @id @default(cuid())
+  planId     String
+  plan       Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  templateId String
+
+  @@unique([planId, templateId])
+  @@index([planId])
+  @@index([templateId])
+}
+
+model Subscription {
+  id                     String             @id @default(cuid())
+  userId                 String             @unique
+  user                   User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId                 String
+  plan                   Plan               @relation(fields: [planId], references: [id])
+  status                 SubscriptionStatus @default(ACTIVE)
+  billingInterval        BillingInterval    @default(MONTHLY)
+  provider               PaymentProvider    @default(MANUAL)
+  providerSubscriptionId String?            @unique
+  currentPeriodStart     DateTime
+  currentPeriodEnd       DateTime
+  cancelAtPeriodEnd      Boolean            @default(false)
+  cancelledAt            DateTime?
+  trialEndsAt            DateTime?
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+
+  @@index([userId])
+  @@index([planId])
+  @@index([status])
+  @@index([currentPeriodEnd])
+}
+
+model Payment {
+  id                String          @id @default(cuid())
+  userId            String
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId            String?
+  plan              Plan?           @relation(fields: [planId], references: [id])
+  subscriptionId    String?
+  amount            Int
+  currency          String          @default("VND")
+  status            PaymentStatus   @default(PENDING)
+  provider          PaymentProvider
+  providerPaymentId String?         @unique
+  providerSessionId String?
+  metadata          Json?
+  failureReason     String?
+  refundedAt        DateTime?
+  paidAt            DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([providerPaymentId])
+  @@index([createdAt])
+}
+
+model CreditWallet {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance   Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions CreditTransaction[]
+
+  @@index([userId])
+}
+
+model CreditTransaction {
+  id            String                @id @default(cuid())
+  walletId      String
+  wallet        CreditWallet          @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  type          CreditTransactionType
+  amount        Int
+  balanceBefore Int
+  balanceAfter  Int
+  description   String?
+  referenceId   String?
+  metadata      Json?
+  createdAt     DateTime              @default(now())
+
+  @@index([walletId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([referenceId])
+}
+
+model AuditLog {
+  id          String      @id @default(cuid())
+  action      AuditAction
+  userId      String?
+  user        User?       @relation("AuditLogUser", fields: [userId], references: [id])
+  adminId     String?
+  admin       User?       @relation("AuditLogAdmin", fields: [adminId], references: [id])
+  description String
+  metadata    Json?
+  ipAddress   String?
+  createdAt   DateTime    @default(now())
+
+  @@index([userId])
+  @@index([adminId])
+  @@index([action])
+  @@index([createdAt])
 }
