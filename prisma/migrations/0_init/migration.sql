@@ -1,4 +1,4 @@
-﻿-- CreateSchema
+-- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 
 -- CreateTable
@@ -53,7 +53,7 @@ CREATE TABLE "VerificationToken" (
 -- CreateTable
 CREATE TABLE "CV" (
     "id" TEXT NOT NULL,
-    "title" TEXT NOT NULL DEFAULT 'CV Kh├┤ng Ti├¬u ─Éß╗ü',
+    "title" TEXT NOT NULL DEFAULT 'CV Không Tiêu Đề',
     "template" TEXT NOT NULL DEFAULT 'Modern',
     "data" JSONB NOT NULL DEFAULT '{}',
     "userId" TEXT NOT NULL,
