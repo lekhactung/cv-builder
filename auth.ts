@@ -6,22 +6,28 @@ import bcrypt from "bcryptjs"
 import { z } from "zod"
 import Google from "next-auth/providers/google"
 
-const ACCESS_TOKEN_EXPIRES_IN = 15 * 60      
+const ACCESS_TOKEN_EXPIRES_IN = 15 * 60
 // const ACCESS_TOKEN_EXPIRES_IN = 15
 
-const REFRESH_TOKEN_EXPIRES_IN = 7 * 24 * 60 * 60 
+const REFRESH_TOKEN_EXPIRES_IN = 7 * 24 * 60 * 60
 // const REFRESH_TOKEN_EXPIRES_IN = 5 * 60
 
 declare module "next-auth" {
     interface Session {
-        user: { id: string } & DefaultSession["user"]
+        user: {
+            id: string,
+            role: "USER" | "ADMIN",
+            isPro: boolean,
+        } & DefaultSession["user"]
         error?: "RefreshTokenExpired"
     }
 }
 
 declare module "@auth/core/jwt" {
     interface JWT {
-        id: string
+        id: string,
+        role: "USER" | "ADMIN",
+        isPro: boolean,
         accessTokenExpires: number
         refreshTokenExpires: number
         error?: "RefreshTokenExpired"
@@ -59,7 +65,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
     session: {
         strategy: "jwt",
-        maxAge: REFRESH_TOKEN_EXPIRES_IN, 
+        maxAge: REFRESH_TOKEN_EXPIRES_IN,
     },
 
     providers: [
@@ -109,10 +115,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         async jwt({ token, user }) {
             if (user) {
+                const dbUser = await prisma.user.findUnique({
+                    where: { id: user.id as string },
+                    select: {
+                        role: true,
+                        subscription: {
+                            select: { status: true },
+                        }
+                    }
+                })
+
+
                 return {
                     ...token,
                     id: user.id as string,
                     picture: user.image ?? token.picture,
+                    role: dbUser?.role ?? "USER",
+                    isPro: dbUser?.subscription?.status === "ACTIVE" ||
+                        dbUser?.subscription?.status === "TRIALING",
                     accessTokenExpires: Date.now() + ACCESS_TOKEN_EXPIRES_IN * 1000,
                     refreshTokenExpires: Date.now() + REFRESH_TOKEN_EXPIRES_IN * 1000,
                 }
@@ -128,6 +148,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             if (token && session.user) {
                 session.user.id = token.id as string
                 session.user.image = token.picture ?? session.user.image
+                session.user.role = token.role as "USER" | "ADMIN"
+                session.user.isPro = token.isPro as boolean
                 session.error = token.error as "RefreshTokenExpired" | undefined
             }
             return session
