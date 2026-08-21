@@ -56,7 +56,7 @@ export const entitlementService = {
         return cvCount < maxCv;
     },
 
-    async canUseAi(userId: string): Promise<boolean> {
+    async canUseAI(userId: string): Promise<boolean> {
         const val = await this.getFeatureValue(userId, "ai_enhance");
         return val === "true";
     },
