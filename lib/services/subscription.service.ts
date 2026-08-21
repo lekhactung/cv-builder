@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { SubscriptionStatus } from "@prisma/client";
 
 export const subscriptionService = {
-    async getActiveSubscriptiion(userId: string) {
+    async getActiveSubscription(userId: string) {
         return prisma.subscription.findFirst({
             where: { userId, status: { in: ["ACTIVE", "TRIALING"] } },
             include:

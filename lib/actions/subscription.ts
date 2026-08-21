@@ -11,7 +11,7 @@ export async function cancelSubscriptionAction() {
     const session = await auth();
     if (!session?.user?.id) throw new Error("Chưa đăng nhập");
 
-    const sub = await subscriptionService.getActiveSubcriptiion(session.user.id);
+    const sub = await subscriptionService.getActiveSubscription(session.user.id);
     if (!sub) throw new Error("Không có subscription active");
 
     if (sub.providerSubscriptionId && sub.provider === "STRIPE") {
