@@ -10,7 +10,7 @@ export async function GET() {
     }
 
     const [subscription, balance] = await Promise.all([
-        subscriptionService.getSubcription(session.user.id),
+        subscriptionService.getSubscription(session.user.id),
         creditService.getBalance(session.user.id),
     ]);
 
