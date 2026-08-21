@@ -55,7 +55,7 @@ export const webhookService = {
             return;
         }
 
-        //lay subcription tu stripe
+        //lay subscription tu stripe
         const stripeSubscription = await stripe.subscriptions.retrieve(
             session.subscription as string
         );
@@ -69,7 +69,7 @@ export const webhookService = {
                     providerPaymentId: stripeSubscription.id,
                 },
             });
-            //create/ upd subcription   //cap credit
+            //create/ upd subscription   //cap credit
             await tx.subscription.upsert({
                 where: { userId },
                 create: {
@@ -171,8 +171,8 @@ export const webhookService = {
                 data: {
                     action: "SUBSCRIPTION_EXPIRED",
                     userId: dbSub.userId,
-                    description: `Subcription expired : ${sub.id}`,
-                    metadata: { subcriptionId: sub.id } as any,
+                    description: `Subscription expired : ${sub.id}`,
+                    metadata: { subscriptionId: sub.id } as any,
                 }
             });
         });
