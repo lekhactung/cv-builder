@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { SubscriptionStatus } from "@prisma/client";
 
 export const subscriptionService = {
-    async getActiveSubcriptiion(userId: string) {
+    async getActiveSubscriptiion(userId: string) {
         return prisma.subscription.findFirst({
             where: { userId, status: { in: ["ACTIVE", "TRIALING"] } },
             include:
@@ -15,7 +15,7 @@ export const subscriptionService = {
         })
     },
 
-    async getSubcription(userId: string) {
+    async getSubscription(userId: string) {
         return prisma.subscription.findUnique({
             where: { userId },
             include: { plan: true },
@@ -32,7 +32,7 @@ export const subscriptionService = {
         })
     },
 
-    async expireSubcription(subscriptionId: string) {
+    async expireSubscription(subscriptionId: string) {
         return prisma.subscription.update({
             where: { id: subscriptionId },
             data: { status: "EXPIRED" }
