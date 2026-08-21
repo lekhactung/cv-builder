@@ -197,7 +197,7 @@ export const webhookService = {
             return;
         }
 
-        const subscriptionId = invoice.subscription as string;
+        const subscriptionId = (invoice as any).subscription as string;
         if (!subscriptionId) return;
 
         const dbSub = await prisma.subscription.findUnique({
