@@ -191,7 +191,8 @@ function AuthContent() {
         {tab === "register" && (
           <div id="form-register">
             <h1 className="auth-title">Tạo tài khoản</h1>
-            <p className="auth-subtitle">Miễn phí · Không cần thẻ tín dụng</p>
+            <p className="auth-subtitle">Bắt đầu với </p>
+            {/* <p></p> */}
 
             <div className="oauth-grid">
               <button className="oauth-btn" 
