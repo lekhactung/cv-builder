@@ -13,12 +13,13 @@ interface Props {
   cvId: string
   initialTitle: string
   initialTemplateName: string
+  initialTemplateId: string
   initialDocument: CvDocument
 }
 
-export default function EditorShell({ cvId, initialTitle, initialTemplateName, initialDocument }: Props) {
+export default function EditorShell({ cvId, initialTitle, initialTemplateName, initialTemplateId, initialDocument }: Props) {
   const {
-    document, title, saved, saving, saveError, lastSavedAt, templateName,
+    document, title, saved, saving, saveError, lastSavedAt, templateName, templateId,
     loadDocument, setTitle, setSaved, setSaving,
     undo, redo, canUndo, canRedo,
   } = useEditorStore()
@@ -29,12 +30,14 @@ export default function EditorShell({ cvId, initialTitle, initialTemplateName, i
   const autoSaveTime = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const templateNameRef = useRef(templateName)
+  const templateIdRef = useRef(templateId)
   const currentCvIdRef = useRef(currentCvId)
   useEffect(() => { templateNameRef.current = templateName }, [templateName])
+  useEffect(() => { templateIdRef.current = templateId }, [templateId])
   useEffect(() => { currentCvIdRef.current = currentCvId }, [currentCvId])
 
   useEffect(() => {
-    loadDocument(cvId, initialTitle, initialTemplateName, initialDocument)
+    loadDocument(cvId, initialTitle, initialTemplateName, initialTemplateId, initialDocument)
   }, [cvId])
 
   useEffect(() => {
@@ -58,9 +61,10 @@ export default function EditorShell({ cvId, initialTitle, initialTemplateName, i
     
       const latestCvId = currentCvIdRef.current
       const latestTemplateName = templateNameRef.current
+      const latestTemplateId = templateIdRef.current
       try {
         if (latestCvId === "new") {
-          const newId = await createCvAction(latestTemplateName, document as any, title)
+          const newId = await createCvAction(latestTemplateId, document as any, title)
           setCurrentCvId(newId)
           currentCvIdRef.current = newId
           window.history.replaceState(null, "", `/editor/${newId}`)
