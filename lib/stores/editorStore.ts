@@ -7,6 +7,7 @@ interface EditorState {
     cvId: string
     title: string
     templateName: string
+    templateId: string
     document: CvDocument
     saved: boolean
     saving: boolean
@@ -22,6 +23,7 @@ interface EditorState {
 
     setTitle: (title: string) => void
     setTemplateName: (name: string) => void
+    setTemplateId: (id: string) => void
     setSaved: (saved: boolean) => void
     setSaving: (saving: boolean) => void
     setSaveError: (error: string | null) => void
@@ -46,13 +48,14 @@ interface EditorState {
     canUndo: () => boolean
     canRedo: () => boolean
 
-    loadDocument: (cvId: string, title: string, templateName: string, doc: CvDocument) => void
+    loadDocument: (cvId: string, title: string, templateName: string, templateId: string, doc: CvDocument) => void
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
     cvId: "",
     title: "",
     templateName: "Modern",
+    templateId: "single",
     document: { layout: "single", theme: { primaryColor: "#7c3aed", accentColor: "#f43f5e", fontFamily: "Inter", fontSize: 14, lineHeight: 1.5 }, columns: [] },
     saved: true,
     saving: false,
@@ -66,6 +69,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
     setTitle: (title) => set({ title, saved: false }),
     setTemplateName: (templateName) => set({ templateName, saved: false }),
+    setTemplateId: (templateId) => set({ templateId }),
     setSaved: (saved) => set({ saved }),
     setSaving: (saving) => set({ saving }),
     setSaveError: (saveError) => set({ saveError }),
@@ -187,7 +191,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     canUndo: () => get().past.length > 0,
     canRedo: () => get().future.length > 0,
     
-    loadDocument: (cvId, title, templateName, doc) => {
-        set({ cvId, title, templateName, document: doc, past: [], future: [], saved: true })
+    loadDocument: (cvId, title, templateName, templateId, doc) => {
+        set({ cvId, title, templateName, templateId, document: doc, past: [], future: [], saved: true })
     },
 }))
