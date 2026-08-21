@@ -15,7 +15,6 @@ function loadEnvFile(filePath: string) {
   }
 }
 
-// Load .env first, then .env.local (local overrides base)
 loadEnvFile(path.join(process.cwd(), ".env"));
 loadEnvFile(path.join(process.cwd(), ".env.local"));
 
@@ -28,4 +27,7 @@ export default defineConfig({
     url: dbUrl,
   },
 
+  migrations: {
+    seed: "npx tsx prisma/seed.ts",
+  },
 });
