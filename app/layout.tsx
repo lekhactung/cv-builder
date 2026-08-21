@@ -8,15 +8,16 @@ import { SessionProvider } from "next-auth/react";
 import { ConditionalLayout } from "@/components/layout/ConditionalLayout";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
+// Body font — thêm subset vietnamese để dấu tiếng Việt không bị vỡ
 const outfitBody = Outfit({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
   variable: "--font-body",
   display: "swap",
 });
 
 const interSans = Inter({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "500", "600"],
   variable: "--font-inter",
   display: "swap",
@@ -29,10 +30,11 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+// Heading font — Mulish hỗ trợ vietnamese, dùng làm font-heading
 const mulishFont = Mulish({
-  subsets: ["latin", "vietnamese"],
-  weight: ["200", "300", "400", "500", "600", "700", "800", "900"],
-  variable: "--font-mulish",
+  subsets: ["latin", "latin-ext", "vietnamese"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  variable: "--font-heading",
   display: "swap",
 });
 
@@ -77,6 +79,7 @@ export default function RootLayout({
         ${mulishFont.variable}
         h-full antialiased
       `}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-bg-base text-text-primary">
         <ThemeProvider>
