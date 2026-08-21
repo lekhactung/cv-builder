@@ -1,16 +1,22 @@
 "use client"
 import { TEMPLATES } from "@/lib/blocks/template"
 import { useEditorStore } from "@/lib/stores/editorStore"
+import { useSession } from "next-auth/react"
 
 interface Props { onClose: () => void }
 
 export default function TemplatePicker({ onClose }: Props) {
-    const { updateDocument, setTemplateName } = useEditorStore()
+    const { updateDocument, setTemplateName, setTemplateId } = useEditorStore()
+    const { data: session } = useSession()
+
+    const allowedTemplates = session?.user?.allowedTemplates || ["single", "two-col"]
+    const availableTemplates = TEMPLATES.filter(t => allowedTemplates.includes(t.id))
 
     const applyTemplate = (t: typeof TEMPLATES[0]) => {
         if (!confirm("Áp dụng template mới sẽ thay thế toàn bộ nội dung hiện tại. Tiếp tục?")) return
         updateDocument(() => t.create())
         setTemplateName(t.name)
+        setTemplateId(t.id)
         onClose()
     }
 
@@ -19,7 +25,7 @@ export default function TemplatePicker({ onClose }: Props) {
             <div className="template-picker" onClick={(e) => e.stopPropagation()}>
                 <h2 className="template-picker-title">Chọn Template</h2>
                 <div className="template-picker-grid">
-                    {TEMPLATES.map((t) => (
+                    {availableTemplates.map((t) => (
                         <button key={t.id} className="template-card" onClick={() => applyTemplate(t)}>
                             <div className="template-thumbnail">
                                 <div className="template-thumb-lines">
