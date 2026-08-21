@@ -1,11 +1,11 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle, XCircle, Clock } from "lucide-react";
 
-export default function PaymentResultPage() {
+function PaymentResultContent() {
   const searchParams = useSearchParams();
   const router       = useRouter();
   const status       = searchParams.get("status"); // success | cancelled | failed
@@ -113,5 +113,13 @@ export default function PaymentResultPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function PaymentResultPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Đang tải...</div>}>
+      <PaymentResultContent />
+    </Suspense>
   );
 }
