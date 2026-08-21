@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
         const stripePriceId = billingInterval === "MONTHLY" ? plan.stripePriceIdMonthly : plan.stripePriceIdYearly;
         if (!stripePriceId) {
-            return NextResponse.json({ error: "Gói Free không cần thanh toán" }, { status: 400 });
+            return NextResponse.json({ error: "Chưa cấu hình Stripe Price ID cho gói này trong Database" }, { status: 400 });
         }
 
         const user = await prisma.user.findUnique({
