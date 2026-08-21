@@ -1,10 +1,10 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import Link from "next/link";
 import StatCard from "@/components/dashboard/StatCard";
 import CvCard from "@/components/dashboard/CvCard";
 import EmptyState from "@/components/dashboard/EmptyState";
-import { FileText, Activity, Plus } from "lucide-react";
+import CreateCvButton from "@/components/dashboard/CreateCvButton";
+import { FileText, Activity } from "lucide-react";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -43,10 +43,7 @@ export default async function DashboardPage() {
             Quản lý và tạo CV chuyên nghiệp của bạn
           </p>
         </div>
-        <Link href="/editor/new?template=Modern" className="btn btn-primary btn-md group">
-          <Plus size={18} className="transition-transform group-hover:rotate-90" /> 
-          Tạo CV mới
-        </Link>
+        <CreateCvButton />
       </div>
 
       {/* Stats */}
