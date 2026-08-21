@@ -26,6 +26,25 @@ export async function deleteCvAction(id: string) {
     }
 }
 
+export async function checkCanCreateCvAction(): Promise<{
+    canCreate: boolean;
+    currentCount: number;
+    maxCv: number;
+}> {
+    const session = await auth();
+    if (!session?.user?.id) throw new Error("Chưa đăng nhập");
+
+    const userId = session.user.id;
+    const { entitlementService } = await import("@/lib/services/entitlement.service");
+
+    const maxCvStr = await entitlementService.getFeatureValue(userId, "max_cv_count");
+    const maxCv = parseInt(maxCvStr ?? "2");
+    const currentCount = await (await import("@/lib/prisma")).prisma.cV.count({ where: { userId } });
+    const canCreate = maxCv === -1 || currentCount < maxCv;
+
+    return { canCreate, currentCount, maxCv: maxCv === -1 ? Infinity : maxCv };
+}
+
 export async function createCvAction(
     templateId: string,
     initialData: unknown = {},
@@ -34,23 +53,38 @@ export async function createCvAction(
     const session = await auth();
     if (!session?.user?.id) throw new Error("Chưa đăng nhập");
 
-    const isDocument = initialData && typeof initialData === 'object' && 'columns' in initialData;
-    const result = isDocument ? CvDocumentSchema.safeParse(initialData) : CvDataSchema.safeParse(initialData);
+    const userId = session.user.id;
+
+    const { entitlementService } = await import("@/lib/services/entitlement.service");
+    const canAccessTemplate = await entitlementService.canUserAccessTemplate(userId, templateId);
+    if (!canAccessTemplate) {
+        throw new Error("Template này không có trong gói của bạn");
+    }
+
+    const canCreate = await entitlementService.canCreateMoreCVs(userId);
+    if (!canCreate) {
+        throw new Error("Bạn đã đạt giới hạn số CV. Vui lòng nâng cấp gói hoặc xóa bớt CV.");
+    }
+
+    const isDocument =
+        initialData && typeof initialData === "object" && "columns" in initialData;
+    const result = isDocument
+        ? CvDocumentSchema.safeParse(initialData)
+        : CvDataSchema.safeParse(initialData);
 
     if (!result.success) {
         throw new Error("Dữ liệu CV không hợp lệ");
     }
 
-    const validatedData = result.data;
-
     const cv = await prisma.cV.create({
         data: {
             title: initialTitle,
             template: templateId,
-            data: validatedData as Prisma.InputJsonValue,
-            userId: session.user.id,
-        }
-    })
+            data: result.data as Prisma.InputJsonValue,
+            userId,
+        },
+    });
+
     return cv.id;
 }
 
