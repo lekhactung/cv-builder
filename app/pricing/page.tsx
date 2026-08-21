@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Check, Zap, Crown, Star, Loader2 } from "lucide-react";
@@ -28,7 +28,7 @@ function getDisplayFeatures(features: PlanFeature[]): string[] {
     .map((f) => f.label as string);
 }
 
-export default function PricingPage() {
+function PricingPageContent() {
   const { data: session }  = useSession();
   const router             = useRouter();
   const searchParams       = useSearchParams();
@@ -197,5 +197,13 @@ export default function PricingPage() {
 
       </div>
     </section>
+  );
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense fallback={<div className="pricing-loading"><Loader2 size={36} className="pricing-spinner" /><p>Đang tải danh sách gói...</p></div>}>
+      <PricingPageContent />
+    </Suspense>
   );
 }
