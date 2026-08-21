@@ -4,6 +4,7 @@ import FeaturesSection from "@/components/home/FeaturesSection";
 import HowItWorksSection from "@/components/home/HowItWorksSection";
 import TemplatesSection from "@/components/home/TemplatesSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
+import PricingSection from "@/components/home/PricingSection";
 import FinalCTASection from "@/components/home/FinalCTASection";
 
 export default function HomePage() {
@@ -15,6 +16,7 @@ export default function HomePage() {
       <HowItWorksSection />
       <TemplatesSection />
       <TestimonialsSection />
+      <PricingSection />
       <FinalCTASection />
     </main>
   );
