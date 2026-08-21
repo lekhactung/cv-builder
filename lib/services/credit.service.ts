@@ -9,7 +9,7 @@ export const creditService = {
         return wallet?.balance ?? 0;
     },
 
-    async hasEnoughCredit(userId: string, amount: number): Promise<boolean> {
+    async hasEnoughCredits(userId: string, amount: number): Promise<boolean> {
         const balance = await this.getBalance(userId);
         return balance >= amount;
     },
@@ -67,7 +67,7 @@ export const creditService = {
         });
     },
 
-    async refundCredit(userId: string, amount: number, description: string, referenceId: string) {
+    async refundCredits(userId: string, amount: number, description: string, referenceId: string) {
         return this.addCredit(userId, amount, "REFUND", description, referenceId);
     },
 
