@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle, XCircle, Clock } from "lucide-react";
+import { CheckCircle, XCircle, Clock, PartyPopper } from "lucide-react";
 
 function PaymentResultContent() {
   const searchParams = useSearchParams();
@@ -31,7 +31,7 @@ function PaymentResultContent() {
       <div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
         <div style={{ textAlign: "center", maxWidth: 480 }}>
           <CheckCircle size={64} color="#22c55e" style={{ marginBottom: 20 }} />
-          <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12 }}>Thanh toán thành công! 🎉</h1>
+          <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>Thanh toán thành công! <PartyPopper size={28} /></h1>
           <p style={{ color: "var(--text-muted)", marginBottom: 24 }}>
             Tài khoản của bạn đang được kích hoạt. Quá trình này có thể mất vài giây.
           </p>

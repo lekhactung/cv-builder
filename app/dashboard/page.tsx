@@ -4,7 +4,7 @@ import StatCard from "@/components/dashboard/StatCard";
 import CvCard from "@/components/dashboard/CvCard";
 import EmptyState from "@/components/dashboard/EmptyState";
 import CreateCvButton from "@/components/dashboard/CreateCvButton";
-import { FileText, Activity } from "lucide-react";
+import { FileText, Activity, Hand } from "lucide-react";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -37,7 +37,7 @@ export default async function DashboardPage() {
       <div className="db-page-header">
         <div>
           <h1 className="db-page-title">
-            Chào mừng, {session?.user?.name?.split(" ").pop() ?? "bạn"} 👋
+            Chào mừng, {session?.user?.name?.split(" ").pop() ?? "bạn"} <Hand size={24} style={{ display: "inline-block", verticalAlign: "middle" }} />
           </h1>
           <p className="db-page-subtitle">
             Quản lý và tạo CV chuyên nghiệp của bạn

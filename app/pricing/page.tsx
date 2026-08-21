@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Check, Zap, Crown, Star, Loader2 } from "lucide-react";
+import { Check, Zap, Crown, Star, Loader2, PartyPopper } from "lucide-react";
 
 interface PlanFeature {
   id: string;
@@ -50,7 +50,7 @@ function PricingPageContent() {
 
   useEffect(() => {
     if (searchParams.get("success") === "true")
-      setMessage({ type: "success", text: "🎉 Thanh toán thành công! Tài khoản đang được kích hoạt..." });
+      setMessage({ type: "success", text: "Thanh toán thành công! Tài khoản đang được kích hoạt..." });
     if (searchParams.get("cancelled") === "true")
       setMessage({ type: "error", text: "Thanh toán đã bị hủy. Bạn có thể thử lại bất cứ lúc nào." });
   }, [searchParams]);
@@ -111,7 +111,8 @@ function PricingPageContent() {
 
         {/* Payment result message */}
         {message && (
-          <div className={`pricing-message pricing-message-${message.type}`}>
+          <div className={`pricing-message pricing-message-${message.type}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            {message.type === "success" && <PartyPopper size={18} />}
             {message.text}
           </div>
         )}
@@ -144,7 +145,7 @@ function PricingPageContent() {
 
               return (
                 <div key={plan.slug} className={`pricing-card${highlight ? " pricing-card-highlight" : ""}`}>
-                  {highlight && <div className="pricing-popular-badge">⭐ Phổ biến nhất</div>}
+                  {highlight && <div className="pricing-popular-badge"><Star size={14} style={{ display: "inline", verticalAlign: "middle", marginRight: 4 }} /> Phổ biến nhất</div>}
 
                   {/* Plan name + icon */}
                   <div className="pricing-plan-header">
