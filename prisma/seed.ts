@@ -1,6 +1,33 @@
 import { PrismaClient, PlanSlug } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
+import * as fs from "fs";
+import * as path from "path";
 
-const prisma = new PrismaClient();
+
+function loadEnv(file: string) {
+    const p = path.join(process.cwd(), file);
+    if (!fs.existsSync(p)) return;
+    for (const line of fs.readFileSync(p, "utf-8").split("\n")) {
+        const t = line.trim();
+        if (!t || t.startsWith("#")) continue;
+        const eq = t.indexOf("=");
+        if (eq === -1) continue;
+        const k = t.slice(0, eq).trim();
+        const v = t.slice(eq + 1).trim().replace(/^["']|["']$/g, "");
+        if (k && !process.env[k]) process.env[k] = v;
+    }
+}
+loadEnv(".env");
+loadEnv(".env.local");
+
+// Dùng DIRECT_URL (port 5432) để tránh pgbouncer pooling khi seed
+const pool = new Pool({
+    connectionString: process.env.DIRECT_URL || process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+});
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
     console.log("seeding plans....")
@@ -78,8 +105,9 @@ async function main() {
             update: {
                 name: rest.name,
                 priceMonthly: rest.priceMonthly,
-                priceYearly: rest.priceYearly
-                ,
+                priceYearly: rest.priceYearly,
+                stripePriceIdMonthly: stripePriceIdMonthly ?? undefined,
+                stripePriceIdYearly: stripePriceIdYearly ?? undefined,
             }
         });
 
