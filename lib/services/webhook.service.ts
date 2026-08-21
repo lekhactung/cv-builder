@@ -22,6 +22,10 @@ export const webhookService = {
                 await this.handlePaymentFailed(event.data.object as Stripe.Invoice);
                 break;
 
+            case "invoice.payment_succeeded":
+                await this.handlePaymentSucceeded(event.data.object as Stripe.Invoice);
+                break;
+
             default:
                 console.log(`[WEBHOOK] Unhandled event: ${event.type}`);
         }
@@ -82,6 +86,7 @@ export const webhookService = {
                     planId: payment.planId!,
                     status: "ACTIVE",
                     providerSubscriptionId: stripeSubscription.id,
+                    billingInterval: stripeSubscription.items.data[0].price.recurring?.interval === "year" ? "YEARLY" : "MONTHLY",
                     currentPeriodStart: new Date(stripeSubscription.items.data[0].current_period_start * 1000),
                     currentPeriodEnd: new Date(stripeSubscription.items.data[0].current_period_end * 1000),
                     cancelAtPeriodEnd: false,
@@ -185,6 +190,74 @@ export const webhookService = {
         });
         console.warn(`[WEBHOOK] Payment failed for customer: ${invoice.customer} `);
         //todo : gửi mail thông báo qua resend ()
-    }
+    },
 
+    async handlePaymentSucceeded(invoice: Stripe.Invoice) {
+        if (invoice.billing_reason !== "subscription_cycle") {
+            return;
+        }
+
+        const subscriptionId = invoice.subscription as string;
+        if (!subscriptionId) return;
+
+        const dbSub = await prisma.subscription.findUnique({
+            where: { providerSubscriptionId: subscriptionId },
+            include: { plan: { include: { features: true } } }
+        });
+
+        if (!dbSub || !dbSub.plan) {
+            console.error("[WEBHOOK] Subscription or Plan not found for invoice:", invoice.id);
+            return;
+        }
+
+        const creditFeature = dbSub.plan.features.find((f) => f.key === "monthly_ai_credits");
+        const credits = parseInt(creditFeature?.value ?? "0");
+
+        await prisma.$transaction(async (tx) => {
+            const payment = await tx.payment.create({
+                data: {
+                    userId: dbSub.userId,
+                    planId: dbSub.planId,
+                    subscriptionId: dbSub.id,
+                    amount: invoice.amount_paid,
+                    currency: invoice.currency.toUpperCase(),
+                    status: "COMPLETED",
+                    provider: "STRIPE",
+                    providerPaymentId: invoice.id,
+                    paidAt: new Date(),
+                }
+            });
+
+            if (credits > 0) {
+                const wallet = await tx.creditWallet.upsert({
+                    where: { userId: dbSub.userId },
+                    create: { userId: dbSub.userId, balance: credits },
+                    update: { balance: { increment: credits } }
+                });
+
+                await tx.creditTransaction.create({
+                    data: {
+                        walletId: wallet.id,
+                        type: "SUBSCRIPTION_GRANT",
+                        amount: credits,
+                        balanceBefore: wallet.balance - credits,
+                        balanceAfter: wallet.balance,
+                        description: `Auto-renewal: ${dbSub.plan!.name} plan`,
+                        referenceId: payment.id,
+                    },
+                });
+            }
+
+            await tx.auditLog.create({
+                data: {
+                    action: "PAYMENT_COMPLETED",
+                    userId: dbSub.userId,
+                    description: `Auto-renewal completed: ${invoice.id}. Credits granted: ${credits}`,
+                    metadata: { paymentId: payment.id, invoiceId: invoice.id, credits, planId: dbSub.planId } as any
+                }
+            });
+        });
+
+        console.log(`[WEBHOOK] Auto-renewal processed for sub: ${subscriptionId}, credits: ${credits}`);
+    }
 }
