@@ -38,5 +38,5 @@ export async function getMySubscriptionAction() {
     const session = await auth();
     if (!session?.user?.id) return null;
 
-    return subscriptionService.getSubcription(session.user.id);
+    return subscriptionService.getSubscription(session.user.id);
 }
