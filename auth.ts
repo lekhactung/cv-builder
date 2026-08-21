@@ -18,6 +18,7 @@ declare module "next-auth" {
             id: string,
             role: "USER" | "ADMIN",
             isPro: boolean,
+            allowedTemplates: string[],
         } & DefaultSession["user"]
         error?: "RefreshTokenExpired"
     }
@@ -28,6 +29,7 @@ declare module "@auth/core/jwt" {
         id: string,
         role: "USER" | "ADMIN",
         isPro: boolean,
+        allowedTemplates: string[],
         accessTokenExpires: number
         refreshTokenExpires: number
         error?: "RefreshTokenExpired"
@@ -120,11 +122,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     select: {
                         role: true,
                         subscription: {
-                            select: { status: true },
+                            select: { 
+                                status: true,
+                                plan: {
+                                    select: {
+                                        templates: {
+                                            select: { templateId: true }
+                                        }
+                                    }
+                                }
+                            },
                         }
                     }
                 })
 
+                const allowedTemplates = dbUser?.subscription?.plan?.templates?.map(t => t.templateId) || ["single", "two-col"]; // default to free templates if none found
 
                 return {
                     ...token,
@@ -133,6 +145,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     role: dbUser?.role ?? "USER",
                     isPro: dbUser?.subscription?.status === "ACTIVE" ||
                         dbUser?.subscription?.status === "TRIALING",
+                    allowedTemplates,
                     accessTokenExpires: Date.now() + ACCESS_TOKEN_EXPIRES_IN * 1000,
                     refreshTokenExpires: Date.now() + REFRESH_TOKEN_EXPIRES_IN * 1000,
                 }
@@ -150,6 +163,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 session.user.image = token.picture ?? session.user.image
                 session.user.role = token.role as "USER" | "ADMIN"
                 session.user.isPro = token.isPro as boolean
+                session.user.allowedTemplates = (token.allowedTemplates as string[]) || ["single", "two-col"]
                 session.error = token.error as "RefreshTokenExpired" | undefined
             }
             return session
