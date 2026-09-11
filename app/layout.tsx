@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit, Inter, JetBrains_Mono, Mulish } from "next/font/google";
+import { Be_Vietnam_Pro, Inter, JetBrains_Mono, Mulish } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -8,16 +8,16 @@ import { SessionProvider } from "next-auth/react";
 import { ConditionalLayout } from "@/components/layout/ConditionalLayout";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
-// Body font — thêm subset vietnamese để dấu tiếng Việt không bị vỡ
-const outfitBody = Outfit({
-  subsets: ["latin", "latin-ext"],
+// Body font — Be Vietnam Pro hỗ trợ đầy đủ tiếng Việt
+const beVietnamPro = Be_Vietnam_Pro({
+  subsets: ["latin", "latin-ext", "vietnamese"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
   variable: "--font-body",
   display: "swap",
 });
 
 const interSans = Inter({
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin", "latin-ext", "vietnamese"],
   weight: ["300", "400", "500", "600"],
   variable: "--font-inter",
   display: "swap",
@@ -73,7 +73,7 @@ export default function RootLayout({
       lang="vi"
       data-scroll-behavior="smooth"
       className={`
-        ${outfitBody.variable}
+        ${beVietnamPro.variable}
         ${interSans.variable}
         ${jetbrainsMono.variable}
         ${mulishFont.variable}

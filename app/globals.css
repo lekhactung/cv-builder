@@ -1335,12 +1335,12 @@ a:focus:not(:focus-visible) {
 
 .hero-title {
   font-family: var(--font-body), sans-serif;
-  font-size: clamp(2.5rem, 5vw, 3.75rem);
+  font-size: clamp(2.1rem, 4.2vw, 3.2rem);
   font-weight: 800;
   line-height: 1.1;
   color: var(--text-primary);
   margin-bottom: 1.25rem;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
 }
 
 .gradient-text-cyan {
@@ -5094,7 +5094,8 @@ span.cve {
 
 .admin-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .admin-sidebar {
