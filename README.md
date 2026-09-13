@@ -1,25 +1,29 @@
 # ResumeAI — CV Builder
 
-## Features
+Ứng dụng tạo CV trực tuyến với AI hỗ trợ viết nội dung, tích hợp thanh toán Stripe và xuất PDF.
 
-- **Block-based editor** — drag, drop, and reorder blocks
-- **Built-in templates** — Simple, Professional, Creative, Harvard....
-- **AI writing assistant** — rewrites summaries and experience bullets with interactive dropdown options via Google Gemini 3.5 Flash
-- **Subscription & Credits** — Stripe integration for PRO/PREMIUM plans, one-off credit packages, Stripe Webhooks (Thin Payload & Snapshot support)
-- **Admin Dashboard** — monitor revenue and users, manage roles, manually adjust user credits, and view detailed audit logs
-- **Auto-save** — changes debounce to PostgreSQL every 1.5s
-- **Undo / Redo** — 50-step history
-- **PDF export** — browser-native `window.print()` with A4 print CSS
-- **Authentication** — email/password + Google OAuth (NextAuth v5)
-- **Password reset** — 6-digit OTP via Resend email (15-min expiry)
-- **Modern UI** — Vanilla CSS with custom properties, glassmorphism, responsive design, and `lucide-react` icons
-- **Dark mode** — full dark/light theme support
+---
+
+## Tính năng nổi bật
+
+- **Block-based editor** — kéo thả, sắp xếp lại các block tự do
+- **Templates có sẵn** — Simple, Professional, Creative, Harvard...
+- **AI writing assistant** — viết lại summary và mô tả kinh nghiệm với dropdown lựa chọn (Google Gemini Flash)
+- **Subscription & Credits** — tích hợp Stripe cho gói PRO/PREMIUM, gói credit lẻ, Stripe Webhooks (Thin Payload & Snapshot)
+- **Admin Dashboard** — theo dõi doanh thu, quản lý người dùng, chỉnh credit thủ công, xem audit log
+- **Auto-save** — tự động lưu xuống PostgreSQL sau 1.5s debounce
+- **Undo / Redo** — lịch sử 50 bước
+- **PDF export** — in A4 qua `window.print()` với CSS print
+- **Authentication** — đăng nhập email/mật khẩu + Google OAuth (NextAuth v5)
+- **Đặt lại mật khẩu** — OTP 6 chữ số qua email Resend (hết hạn sau 15 phút)
+- **Dark mode** — hỗ trợ đầy đủ theme sáng/tối
+- **Modern UI** — Vanilla CSS + biến CSS, glassmorphism, responsive, `lucide-react`
 
 ---
 
 ## Tech Stack
 
-| | |
+| Hạng mục | Công nghệ |
 |---|---|
 | **Framework** | Next.js 16 (App Router) |
 | **Language** | TypeScript |
@@ -29,70 +33,116 @@
 | **State** | Zustand (undo/redo + autosave) |
 | **Drag & Drop** | @dnd-kit |
 | **Validation** | Zod |
-| **AI** | Vercel AI SDK + Google Gemini 3.5 Flash |
+| **AI** | Vercel AI SDK + Google Gemini Flash |
 | **Email** | Resend |
+| **PDF** | `@react-pdf/renderer` + CSS print |
 
 ---
 
-## Getting Started
+## Cài đặt & Chạy dự án
 
 ```bash
-# 1. Clone & install
-git clone <repo-url>
-cd cv-builder
+# 1. Cài dependencies
 npm install
 
-# 2. Set up environment variables
-# Create .env.local with the variables listed below
+# 2. Tạo file .env.local (xem mục Environment Variables bên dưới)
 
-# 3. Set up database
+# 3. Đồng bộ schema database
 npx prisma db push
 
-# 4. Start dev server
+# 4. Khởi động dev server
 npm run dev
-
-# 5. Local Stripe Webhooks
-stripe listen --forward-to localhost:3000/api/webhook/stripe
 ```
 
-### Environment Variables
+Truy cập: [http://localhost:3000](http://localhost:3000)
+
+---
+
+## Environment Variables
+
+Tạo file `.env.local` ở thư mục gốc với nội dung sau:
 
 ```env
+# ── Database (Supabase PostgreSQL) ──────────────────────────────
+# Pooler (transaction mode) — dùng cho runtime
 DATABASE_URL="postgresql://..."
+
+# Pooler (session mode) — dùng cho migrations
 DIRECT_URL="postgresql://..."
 
-AUTH_SECRET="..."
-AUTH_URL="http://localhost:3000"
+# ── Authentication (NextAuth v5) ─────────────────────────────────
+AUTH_SECRET="..."          # Tạo bằng: npx auth secret
+AUTH_URL="http://localhost:3000/api/auth"
 AUTH_GOOGLE_ID="..."
 AUTH_GOOGLE_SECRET="..."
 
+# ── Email (Resend) ────────────────────────────────────────────────
 RESEND_API_KEY="..."
+
+# ── AI (Google Gemini) ────────────────────────────────────────────
 GOOGLE_GENERATIVE_AI_API_KEY="..."
 
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="..."
-STRIPE_SECRET_KEY="..."
-STRIPE_WEBHOOK_SECRET="..."
-STRIPE_WEBHOOK_SECRET_THIN="..."
+# ── Stripe ────────────────────────────────────────────────────────
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+
+# Stripe Price IDs (lấy từ Stripe Dashboard)
+STRIPE_PRO_PRICE_MONTHLY="price_..."
+STRIPE_PRO_PRICE_YEARLY="price_..."
+STRIPE_PREMIUM_PRICE_MONTHLY="price_..."
+STRIPE_PREMIUM_PRICE_YEARLY="price_..."
 ```
 
-Generate `AUTH_SECRET` with: `npx auth secret`
+> **Lưu ý:** File `.env.local` chứa thông tin bí mật — **không** commit lên Git.
 
 ---
 
-## Project Structure
+## Cấu trúc dự án
 
 ```
-app/
-  admin/       → Admin Dashboard, User Management, Payments, Plans
-  api/         → Next.js API Routes (Webhooks, Auth, AI, Stripe)
-  dashboard/   → User Dashboard (CVs, Billing)
-components/    → UI components (editor, dashboard, landing page)
-lib/
-  actions/     → Server Actions (CV CRUD, password reset)
-  services/    → Business logic (webhook service, mail service)
-  schemas/     → Zod schemas — source of truth for CV document shape
-  stores/      → Zustand editor store (state, undo/redo, autosave)
-  blocks/      → Block factory & template definitions
-prisma/        → Database schema
-auth.ts        → NextAuth configuration
+cv-builder/
+├── app/
+│   ├── admin/        → Admin Dashboard (doanh thu, người dùng, audit log)
+│   ├── api/          → API Routes (Auth, AI, Stripe Webhooks, CV)
+│   ├── auth/         → Trang đăng nhập / đăng ký / đặt lại mật khẩu
+│   ├── billing/      → Quản lý gói đăng ký của người dùng
+│   ├── dashboard/    → Dashboard cá nhân (danh sách CV)
+│   ├── editor/       → Trình chỉnh sửa CV (block editor)
+│   ├── payment/      → Xử lý kết quả thanh toán (success/cancel)
+│   └── pricing/      → Trang giá các gói dịch vụ
+├── components/       → UI components (editor, dashboard, landing, shared)
+├── lib/
+│   ├── actions/      → Server Actions (CRUD CV, đặt lại mật khẩu, admin)
+│   ├── services/     → Business logic (webhook, mail service)
+│   ├── schemas/      → Zod schemas — định nghĩa cấu trúc CV
+│   ├── stores/       → Zustand store (state, undo/redo, autosave)
+│   └── blocks/       → Block factory & định nghĩa template
+├── prisma/           → Schema database
+├── public/           → Assets tĩnh
+├── auth.ts           → Cấu hình NextAuth
+└── next.config.ts    → Cấu hình Next.js
 ```
+
+---
+
+## Scripts
+
+```bash
+npm run dev      # Khởi động dev server (http://localhost:3000)
+npm run build    # Build production
+npm run start    # Chạy production server
+npm run lint     # Kiểm tra lỗi ESLint
+```
+
+---
+
+## Stripe Webhooks (local)
+
+Để test Stripe webhook trên máy local, cài [Stripe CLI](https://stripe.com/docs/stripe-cli) rồi chạy:
+
+```bash
+stripe listen --forward-to localhost:3000/api/webhook/stripe
+```
+
+Sao chép `whsec_...` được in ra vào `STRIPE_WEBHOOK_SECRET` trong `.env.local`.
