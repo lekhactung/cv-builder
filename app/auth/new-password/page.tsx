@@ -59,8 +59,8 @@ function NewPasswordForm() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg">
+    <div className="flex items-center justify-center min-h-screen bg-bg-base text-text-primary px-4">
+      <div className="w-full max-w-md p-8 bg-surface rounded-xl shadow-lg">
         <h2
           className="text-2xl font-bold text-center mb-6"
           style={{
@@ -74,9 +74,7 @@ function NewPasswordForm() {
         </h2>
 
         {error && (
-          <div className="p-3 mb-4 text-sm text-red-600 bg-red-100 rounded-lg">
-            {error}
-          </div>
+          <div className="p-3 mb-4 text-sm text-red-600 bg-red-100 rounded-lg">{error}</div>
         )}
 
         {success && (
@@ -87,14 +85,16 @@ function NewPasswordForm() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label htmlFor="reset-password" className="block text-sm font-medium mb-1">
               Mật khẩu mới
             </label>
             <input
+              id="reset-password"
               type="password"
+              autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 outline-none"
+              className="form-input"
               placeholder="••••••••"
               required
             />
@@ -117,8 +117,8 @@ export default function NewPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center min-h-screen bg-gray-50">
-          <p className="text-gray-500">Đang tải...</p>
+        <div className="flex items-center justify-center min-h-screen bg-bg-base">
+          <p className="text-text-secondary">Đang tải...</p>
         </div>
       }
     >

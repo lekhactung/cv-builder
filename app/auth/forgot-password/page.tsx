@@ -62,25 +62,37 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg">
-        <h2 className="text-2xl font-bold text-center mb-6" style={{ background: "linear-gradient(135deg, #059669 0%, #10B981 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Khôi phục mật khẩu</h2>
+    <div className="flex items-center justify-center min-h-screen bg-bg-base text-text-primary px-4">
+      <div className="w-full max-w-md p-8 bg-surface rounded-xl shadow-lg">
+        <h2
+          className="text-2xl font-bold text-center mb-6"
+          style={{
+            background: "linear-gradient(135deg, #059669 0%, #10B981 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+          }}
+        >
+          Khôi phục mật khẩu
+        </h2>
 
         {error && (
-          <div className="p-3 mb-4 text-sm text-red-600 bg-red-100 rounded-lg">
-            {error}
-          </div>
+          <div className="p-3 mb-4 text-sm text-red-600 bg-red-100 rounded-lg">{error}</div>
         )}
 
         {step === 1 ? (
           <form onSubmit={handleSendCode} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Email của bạn</label>
+              <label htmlFor="reset-email" className="block text-sm font-medium mb-1">
+                Email của bạn
+              </label>
               <input
+                id="reset-email"
                 type="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500 outline-none"
+                className="form-input"
                 placeholder="name@example.com"
                 required
               />
@@ -99,17 +111,19 @@ export default function ForgotPasswordPage() {
               Mã xác nhận 6 số đã được gửi tới email <b>{maskEmail(email)}</b>.
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Nhập mã xác nhận (6 số)</label>
+              <label htmlFor="reset-code" className="block text-sm font-medium mb-1">
+                Nhập mã xác nhận (6 số)
+              </label>
               <input
+                id="reset-code"
                 type="text"
+                autoComplete="one-time-code"
                 inputMode="numeric"
                 pattern="[0-9]*"
                 maxLength={6}
                 value={code}
-                onChange={(e) =>
-                  setCode(e.target.value.replace(/\D/g, ""))
-                }
-                className="w-full px-4 py-2 border rounded-lg text-center text-xl tracking-[0.5em] focus:ring-2 focus:ring-violet-500 outline-none"
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                className="form-input text-center tracking-[0.5em]"
                 placeholder="------"
                 required
               />
@@ -123,7 +137,11 @@ export default function ForgotPasswordPage() {
             </button>
             <button
               type="button"
-              onClick={() => { setStep(1); setCode(""); setError(""); }}
+              onClick={() => {
+                setStep(1);
+                setCode("");
+                setError("");
+              }}
               className="w-full py-2 text-sm text-violet-600 mt-2 hover:underline"
             >
               Sai email? Gửi lại
