@@ -56,6 +56,19 @@ npm run dev
 
 Truy cập: [http://localhost:3000](http://localhost:3000)
 
+### Format code
+
+```bash
+npm run format        # Format mã nguồn và cấu hình bằng Prettier
+npm run format:check  # Kiểm tra định dạng, không sửa file
+```
+
+Workspace `CV BUILDER` dùng extension **Prettier - Code formatter**
+(`esbenp.prettier-vscode`) cho JavaScript, TypeScript và TSX, đồng thời format khi lưu.
+Trong VS Code trên Windows, nhấn **Alt + Shift + F** để format file đang mở.
+File `.tsx` cần ở chế độ ngôn ngữ **TypeScript React**; formatter có thể báo lỗi
+nếu file có cú pháp không hợp lệ.
+
 ---
 
 ## Environment Variables

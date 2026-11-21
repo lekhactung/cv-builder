@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --write \"{app,components,lib,prisma,scripts}/**/*.{ts,tsx,js,jsx,mjs,cjs,css}\" \"*.{ts,tsx,js,mjs,cjs,json}\"",
+    "format:check": "prettier --check \"{app,components,lib,prisma,scripts}/**/*.{ts,tsx,js,jsx,mjs,cjs,css}\" \"*.{ts,tsx,js,mjs,cjs,json}\"",
     "postinstall": "prisma generate",
     "prisma": {
       "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -50,6 +52,7 @@
     "@types/react-pdf": "^6.2.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "prettier": "3.10.1",
     "tailwindcss": "^3.4.19",
     "typescript": "^5"
   }
