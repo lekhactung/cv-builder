@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Be_Vietnam_Pro, Inter, JetBrains_Mono, Mulish } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -8,32 +8,42 @@ import { SessionProvider } from "next-auth/react";
 import { ConditionalLayout } from "@/components/layout/ConditionalLayout";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
-// Body font — Be Vietnam Pro hỗ trợ đầy đủ tiếng Việt
-const beVietnamPro = Be_Vietnam_Pro({
-  subsets: ["latin", "latin-ext", "vietnamese"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+// Bundle fonts locally so builds do not depend on Google Fonts responses.
+const beVietnamPro = localFont({
+  src: [
+    { path: "./fonts/BeVietnamPro-Light.ttf", weight: "300", style: "normal" },
+    { path: "./fonts/BeVietnamPro-Regular.ttf", weight: "400", style: "normal" },
+    { path: "./fonts/BeVietnamPro-Medium.ttf", weight: "500", style: "normal" },
+    { path: "./fonts/BeVietnamPro-SemiBold.ttf", weight: "600", style: "normal" },
+    { path: "./fonts/BeVietnamPro-Bold.ttf", weight: "700", style: "normal" },
+    { path: "./fonts/BeVietnamPro-ExtraBold.ttf", weight: "800", style: "normal" },
+    { path: "./fonts/BeVietnamPro-Black.ttf", weight: "900", style: "normal" },
+  ],
   variable: "--font-body",
   display: "swap",
 });
 
-const interSans = Inter({
-  subsets: ["latin", "latin-ext", "vietnamese"],
-  weight: ["300", "400", "500", "600"],
+const interSans = localFont({
+  src: "./fonts/Inter-Variable.ttf",
+  weight: "300 600",
+  style: "normal",
   variable: "--font-inter",
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
+const jetbrainsMono = localFont({
+  src: "./fonts/JetBrainsMono-Variable.ttf",
+  weight: "400 500",
+  style: "normal",
   variable: "--font-mono",
   display: "swap",
 });
 
 // Heading font — Mulish hỗ trợ vietnamese, dùng làm font-heading
-const mulishFont = Mulish({
-  subsets: ["latin", "latin-ext", "vietnamese"],
-  weight: ["400", "500", "600", "700", "800", "900"],
+const mulishFont = localFont({
+  src: "./fonts/Mulish-Variable.ttf",
+  weight: "400 900",
+  style: "normal",
   variable: "--font-heading",
   display: "swap",
 });

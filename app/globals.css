@@ -1,7 +1,5 @@
-/* Font được load qua Next.js font optimization trong app/layout.tsx
-   Outfit (body) — latin + latin-ext
-   Mulish (heading) — latin + latin-ext + vietnamese
-   JetBrains Mono (code) */
+/* Font local được load qua next/font/local trong app/layout.tsx:
+   Be Vietnam Pro (body), Inter, Mulish (heading), JetBrains Mono (code). */
 
 @tailwind base;
 @tailwind components;
@@ -80,7 +78,7 @@
   --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
 
   /* ── Fonts ── */
-  /* --font-heading được inject bởi Next.js từ layout.tsx (Mulish + vietnamese subset) */
+  /* --font-heading được inject bởi Next.js từ layout.tsx (Mulish local). */
 }
 
 /* ============================================================
