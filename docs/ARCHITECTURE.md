@@ -515,7 +515,7 @@ State management relies on local Zustand memory and full-document JSON saves.
 
 - **Phase 1 — Stabilization (Current):** Refactor `EditableTemplate.tsx` into smaller components. Fix `getCvAction` IDOR vulnerability.
 - **Phase 2 — Editor Polish:** Implement visual pagination (Page 1, Page 2) instead of infinite scroll canvas.
-- **Phase 3 — AI Integration:** Add OpenAI API to generate CV summaries and suggest bullet points based on job titles.
+- **Phase 3 — AI Integration (COMPLETED):** Implemented Google Gemini (v3.5 Flash) via Vercel AI SDK to generate CV summaries and experience bullet points. Uses `generateObject` with Zod for strict JSON array output and a dynamic dropdown UI for option selection.
 - **Phase 4 — Analytics:** Track template usage and PDF export metrics.
 
 ---
