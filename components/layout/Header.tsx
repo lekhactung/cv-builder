@@ -10,7 +10,7 @@ export default function Header() {
   const [menuOpen, setMenuOpen]       = useState(false);
   const [scrolled, setScrolled]       = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [imageError, setImageError]   = useState(false);
+  const [imageError, setImageError]   = useState<string | null>(null);
   const { data: session, status }     = useSession();
   const { toggleTheme, isDark }       = useTheme();
 
@@ -31,8 +31,8 @@ export default function Header() {
 
         {/* Nav links */}
         <ul className={`nav-links${menuOpen ? " nav-links-open" : ""}`}>
-          <li><a href="#features"  className="nav-link" onClick={() => setMenuOpen(false)}>Tính năng</a></li>
-          <li><a href="#templates" className="nav-link" onClick={() => setMenuOpen(false)}>Templates</a></li>
+          <li><Link href="/#features" className="nav-link" onClick={() => setMenuOpen(false)}>Tính năng</Link></li>
+          <li><Link href="/#templates" className="nav-link" onClick={() => setMenuOpen(false)}>Templates</Link></li>
           <li><Link href="/pricing" className="nav-link" onClick={() => setMenuOpen(false)}>Bảng giá</Link></li>
           <li><a href="#"          className="nav-link" onClick={() => setMenuOpen(false)}>Blog</a></li>
         </ul>
@@ -58,14 +58,14 @@ export default function Header() {
 
                 {/* Trigger */}
                 <div className="nav-user-trigger" onClick={() => setDropdownOpen(!dropdownOpen)}>
-                  {session.user.image && !imageError ? (
+                  {session.user.image && imageError !== session.user.image ? (
                     <img
                       src={session.user.image}
                       alt={session.user.name ?? "Avatar"}
                       width={36}
                       height={36}
                       className="nav-user-avatar"
-                      onError={() => setImageError(true)}
+                      onError={() => setImageError(session.user.image ?? null)}
                     />
                   ) : (
                     <div className="nav-user-initials">
