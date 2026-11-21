@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   if (!canUse) {
     return NextResponse.json(
       { error: "Gói của bạn không hỗ trợ tính năng AI", code: "FEATURE_NOT_ALLOWED" },
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
         code: "INSUFFICIENT_CREDITS",
         upgradeUrl: "/pricing",
       },
-      { status: 402 }
+      { status: 402 },
     );
   }
 
@@ -48,12 +48,12 @@ export async function POST(req: Request) {
       CREDIT_COST,
       "AI_REWRITE",
       `AI Enhance (${type ?? "text"})`,
-      cvId ?? undefined
+      cvId ?? undefined,
     );
   } catch (err: any) {
     return NextResponse.json(
       { error: "Không thể trừ credits", code: "CREDIT_DEDUCTION_FAILED" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -97,15 +97,12 @@ export async function POST(req: Request) {
         userId,
         CREDIT_COST,
         "Hoàn trả: AI request thất bại",
-        transaction.id
+        transaction.id,
       );
     } catch (refundErr) {
       console.error("[AI_REFUND_ERROR]", refundErr);
     }
 
-    return NextResponse.json(
-      { error: error?.message || "AI failed" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error?.message || "AI failed" }, { status: 500 });
   }
 }

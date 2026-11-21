@@ -1,3 +1,3 @@
 export const pdfTemplates = {
-    Modern: () => import("@/components/editor/preview/ModernTemplatePdf"),
+  Modern: () => import("@/components/editor/preview/ModernTemplatePdf"),
 } as const;

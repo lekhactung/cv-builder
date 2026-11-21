@@ -7,7 +7,9 @@ export default function TrustedSection() {
         <p className="trusted-label">Được tin dùng bởi ứng viên tại</p>
         <div className="trusted-logos">
           {logos.map((logo) => (
-            <div key={logo} className="trusted-logo">{logo}</div>
+            <div key={logo} className="trusted-logo">
+              {logo}
+            </div>
           ))}
         </div>
       </div>

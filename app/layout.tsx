@@ -86,9 +86,7 @@ export default function RootLayout({
           <SessionProvider>
             <SessionGuard>
               {/* <Header /> */}
-              <ConditionalLayout>
-                {children}
-              </ConditionalLayout>
+              <ConditionalLayout>{children}</ConditionalLayout>
               {/* <Footer /> */}
             </SessionGuard>
           </SessionProvider>

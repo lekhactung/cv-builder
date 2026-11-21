@@ -37,11 +37,10 @@ export default async function DashboardPage() {
       <div className="db-page-header">
         <div>
           <h1 className="db-page-title">
-            Chào mừng, {session?.user?.name?.split(" ").pop() ?? "bạn"} <Hand size={24} style={{ display: "inline-block", verticalAlign: "middle" }} />
+            Chào mừng, {session?.user?.name?.split(" ").pop() ?? "bạn"}{" "}
+            <Hand size={24} style={{ display: "inline-block", verticalAlign: "middle" }} />
           </h1>
-          <p className="db-page-subtitle">
-            Quản lý và tạo CV chuyên nghiệp của bạn
-          </p>
+          <p className="db-page-subtitle">Quản lý và tạo CV chuyên nghiệp của bạn</p>
         </div>
         <CreateCvButton />
       </div>

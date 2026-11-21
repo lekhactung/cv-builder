@@ -8,7 +8,7 @@ import { CheckCircle, XCircle, Clock, Home, RotateCcw, ArrowRight } from "lucide
 function PaymentResult() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const status = searchParams.get("status"); 
+  const status = searchParams.get("status");
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
@@ -111,7 +111,13 @@ function PaymentResult() {
 export default function PaymentResultPage() {
   return (
     <div className="payment-result-page">
-      <Suspense fallback={<div className="payment-result-card"><p>Đang tải...</p></div>}>
+      <Suspense
+        fallback={
+          <div className="payment-result-card">
+            <p>Đang tải...</p>
+          </div>
+        }
+      >
         <PaymentResult />
       </Suspense>
     </div>

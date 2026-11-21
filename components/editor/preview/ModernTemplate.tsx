@@ -1,7 +1,10 @@
 import { CvData } from "@/lib/schemas/cv.schema";
 
 const LEVEL_MAP: Record<string, number> = {
-  beginner: 25, intermediate: 50, advanced: 75, expert: 95,
+  beginner: 25,
+  intermediate: 50,
+  advanced: 75,
+  expert: 95,
 };
 
 const DEFAULT_ORDER = ["personal", "experience", "education", "skills"];
@@ -58,10 +61,14 @@ export default function ModernTemplate({ data, sectionOrder = DEFAULT_ORDER }: P
             <div className="cv-item-header">
               <div>
                 <p className="cv-item-title">{edu.school}</p>
-                <p className="cv-item-subtitle">{edu.degree} — {edu.field}</p>
+                <p className="cv-item-subtitle">
+                  {edu.degree} — {edu.field}
+                </p>
                 {edu.gpa && <p className="cv-item-gpa">GPA: {edu.gpa}</p>}
               </div>
-              <p className="cv-item-date">{edu.startDate} — {edu.endDate}</p>
+              <p className="cv-item-date">
+                {edu.startDate} — {edu.endDate}
+              </p>
             </div>
           </div>
         ))}
@@ -105,10 +112,10 @@ export default function ModernTemplate({ data, sectionOrder = DEFAULT_ORDER }: P
           <h1 className="cv-name">{personal.fullName || "Họ và Tên"}</h1>
           <p className="cv-jobtitle">{personal.jobTitle || "Chức danh"}</p>
           <div className="cv-contacts">
-            {personal.email    && <span> {personal.email}</span>}
-            {personal.phone    && <span> {personal.phone}</span>}
+            {personal.email && <span> {personal.email}</span>}
+            {personal.phone && <span> {personal.phone}</span>}
             {personal.location && <span> {personal.location}</span>}
-            {personal.website  && <span> {personal.website}</span>}
+            {personal.website && <span> {personal.website}</span>}
             {personal.linkedin && <span> {personal.linkedin}</span>}
           </div>
         </div>
@@ -118,4 +125,3 @@ export default function ModernTemplate({ data, sectionOrder = DEFAULT_ORDER }: P
     </div>
   );
 }
-

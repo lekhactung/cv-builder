@@ -10,7 +10,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
     pathName.startsWith("/auth") ||
     pathName.startsWith("/dashboard") ||
     pathName.startsWith("/editor") ||
-    pathName.startsWith("/admin");   
+    pathName.startsWith("/admin");
   return (
     <>
       {!hideLayout && <Header />}

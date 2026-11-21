@@ -12,14 +12,14 @@ export default async function AdminUsersPage({
   searchParams: Promise<SearchParams>;
 }) {
   const { q, page: pageParam } = await searchParams;
-  const search   = q ?? "";
-  const page     = parseInt(pageParam ?? "1");
+  const search = q ?? "";
+  const page = parseInt(pageParam ?? "1");
   const pageSize = 20;
 
   const where = search
     ? {
         OR: [
-          { name:  { contains: search, mode: "insensitive" as const } },
+          { name: { contains: search, mode: "insensitive" as const } },
           { email: { contains: search, mode: "insensitive" as const } },
         ],
       }
@@ -75,25 +75,32 @@ export default async function AdminUsersPage({
                   <div style={{ fontSize: 12, color: "#9ca3af" }}>{u.email}</div>
                 </td>
                 <td>
-                  <span className={`admin-badge ${u.subscription?.status === "ACTIVE" ? "admin-badge-active" : "admin-badge-inactive"}`}>
+                  <span
+                    className={`admin-badge ${u.subscription?.status === "ACTIVE" ? "admin-badge-active" : "admin-badge-inactive"}`}
+                  >
                     {u.subscription?.plan?.name ?? "Free"}
                   </span>
                 </td>
                 <td style={{ fontWeight: 600, color: "#f59e0b" }}>
                   {u.creditWallet?.balance ?? 0}
                 </td>
-                <td style={{ color: "#6b7280" }}>
-                  {u._count.cvs}
-                </td>
+                <td style={{ color: "#6b7280" }}>{u._count.cvs}</td>
                 <td>
-                  <span className={`admin-badge ${u.role === "ADMIN" ? "admin-badge-admin" : "admin-badge-inactive"}`}>
+                  <span
+                    className={`admin-badge ${u.role === "ADMIN" ? "admin-badge-admin" : "admin-badge-inactive"}`}
+                  >
                     {u.role}
                   </span>
                 </td>
                 <td>
                   <Link
                     href={`/admin/users/${u.id}`}
-                    style={{ color: "#7c3aed", textDecoration: "none", fontSize: 13, fontWeight: 500 }}
+                    style={{
+                      color: "#7c3aed",
+                      textDecoration: "none",
+                      fontSize: 13,
+                      fontWeight: 500,
+                    }}
                   >
                     Chi tiết →
                   </Link>
@@ -111,10 +118,14 @@ export default async function AdminUsersPage({
         </span>
         <div className="admin-pagination-actions">
           {page > 1 && (
-            <Link href={`?q=${search}&page=${page - 1}`} className="admin-pagination-btn">← Trước</Link>
+            <Link href={`?q=${search}&page=${page - 1}`} className="admin-pagination-btn">
+              ← Trước
+            </Link>
           )}
           {page * pageSize < total && (
-            <Link href={`?q=${search}&page=${page + 1}`} className="admin-pagination-btn">Sau →</Link>
+            <Link href={`?q=${search}&page=${page + 1}`} className="admin-pagination-btn">
+              Sau →
+            </Link>
           )}
         </div>
       </div>

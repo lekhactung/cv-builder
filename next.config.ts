@@ -9,13 +9,11 @@ const nextConfig: NextConfig = {
   },
   webpack: (config) => {
     // Required for @react-pdf/renderer and pdfjs-dist compatibility (webpack mode)
-    config.resolve.alias.canvas = false
-    return config
+    config.resolve.alias.canvas = false;
+    return config;
   },
   images: {
-    remotePatterns: [
-       { protocol: "https", hostname: "lh3.googleusercontent.com" },
-    ]
+    remotePatterns: [{ protocol: "https", hostname: "lh3.googleusercontent.com" }],
   },
 };
 

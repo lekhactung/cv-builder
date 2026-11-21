@@ -50,10 +50,7 @@ export default function TestimonialsSection() {
               <div className="testimonial-stars">{t.stars}</div>
               <p>&quot;{t.text}&quot;</p>
               <div className="testimonial-author">
-                <div
-                  className="author-avatar"
-                  style={{ background: t.avatarGrad }}
-                >
+                <div className="author-avatar" style={{ background: t.avatarGrad }}>
                   {t.initials}
                 </div>
                 <div>

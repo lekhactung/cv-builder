@@ -15,19 +15,29 @@ export default function HeroSection() {
             <span>AI-Powered · ATS Optimized · 10,000+ CVs tạo thành công</span>
           </div>
           <h1 className="hero-title">
-            Xây dựng CV <span className="gradient-text">nổi bật</span><br />
+            Xây dựng CV <span className="gradient-text">nổi bật</span>
+            <br />
             với sức mạnh của <span className="gradient-text-cyan">AI</span>
           </h1>
           <p className="hero-subtitle">
-            Không chỉ là công cụ tạo CV — ResumeAI là{" "}
-            <strong>cố vấn nghề nghiệp AI cá nhân</strong>{" "}
+            Không chỉ là công cụ tạo CV — ResumeAI là <strong>cố vấn nghề nghiệp AI cá nhân</strong>{" "}
             giúp bạn vượt qua ATS và ấn tượng nhà tuyển dụng ngay từ cái nhìn đầu tiên.
           </p>
           <div className="hero-cta">
-            <Link href="/editor/new?template=Modern" className="btn btn-primary btn-lg" id="hero-cta-primary">
+            <Link
+              href="/editor/new?template=Modern"
+              className="btn btn-primary btn-lg"
+              id="hero-cta-primary"
+            >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-              </svg> Tạo CV mới
+                <path
+                  d="M12 5v14M5 12h14"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
+              </svg>{" "}
+              Tạo CV mới
             </Link>
             <a href="#demo" className="btn btn-outline btn-lg" id="hero-cta-demo">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">

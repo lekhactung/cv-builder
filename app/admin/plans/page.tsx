@@ -38,10 +38,10 @@ const AVAILABLE_TEMPLATES = [
 export default function AdminPlansPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{type: "success" | "error", text: string} | null>(null);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   useEffect(() => {
     fetchPlans();
@@ -79,8 +79,8 @@ export default function AdminPlansPage() {
         priceYearly: editingPlan.priceYearly,
         isActive: editingPlan.isActive,
         sortOrder: editingPlan.sortOrder,
-        features: editingPlan.features.map(f => ({ key: f.key, value: f.value, label: f.label })),
-        templates: editingPlan.templates.map(t => t.templateId),
+        features: editingPlan.features.map((f) => ({ key: f.key, value: f.value, label: f.label })),
+        templates: editingPlan.templates.map((t) => t.templateId),
       };
 
       const res = await fetch(`/api/admin/plans/${editingPlan.id}`, {
@@ -115,7 +115,7 @@ export default function AdminPlansPage() {
     if (!editingPlan) return;
     setEditingPlan({
       ...editingPlan,
-      features: [...editingPlan.features, { key: "", value: "", label: "" }]
+      features: [...editingPlan.features, { key: "", value: "", label: "" }],
     });
   };
 
@@ -128,11 +128,11 @@ export default function AdminPlansPage() {
 
   const handleTemplateToggle = (templateId: string) => {
     if (!editingPlan) return;
-    const hasTemplate = editingPlan.templates.some(t => t.templateId === templateId);
+    const hasTemplate = editingPlan.templates.some((t) => t.templateId === templateId);
     let newTemplates = [...editingPlan.templates];
-    
+
     if (hasTemplate) {
-      newTemplates = newTemplates.filter(t => t.templateId !== templateId);
+      newTemplates = newTemplates.filter((t) => t.templateId !== templateId);
     } else {
       newTemplates.push({ templateId });
     }
@@ -140,7 +140,11 @@ export default function AdminPlansPage() {
   };
 
   if (loading) {
-    return <div style={{ padding: 40, display: "flex", justifyContent: "center" }}><Loader2 className="spin" /></div>;
+    return (
+      <div style={{ padding: 40, display: "flex", justifyContent: "center" }}>
+        <Loader2 className="spin" />
+      </div>
+    );
   }
 
   return (
@@ -155,7 +159,7 @@ export default function AdminPlansPage() {
               <span className="plan-card-slug">{plan.slug}</span>
             </div>
             <div className="plan-card-desc">{plan.description}</div>
-            
+
             <div className="plan-card-price">
               <div>
                 <span className="price-val">{plan.priceMonthly.toLocaleString("vi-VN")}đ</span>
@@ -168,8 +172,12 @@ export default function AdminPlansPage() {
             </div>
 
             <div className="plan-card-stats">
-              <div><strong>{plan.features.length}</strong> features</div>
-              <div><strong>{plan.templates.length}</strong> templates</div>
+              <div>
+                <strong>{plan.features.length}</strong> features
+              </div>
+              <div>
+                <strong>{plan.templates.length}</strong> templates
+              </div>
             </div>
 
             <button onClick={() => handleEdit(plan)} className="plan-edit-btn">
@@ -183,7 +191,9 @@ export default function AdminPlansPage() {
         <div className="plan-modal-overlay">
           <div className="plan-modal">
             <div className="plan-modal-header">
-              <h2>Sửa gói: {editingPlan.name} ({editingPlan.slug})</h2>
+              <h2>
+                Sửa gói: {editingPlan.name} ({editingPlan.slug})
+              </h2>
               <button className="plan-modal-close" onClick={() => setEditingPlan(null)}>
                 <X size={20} />
               </button>
@@ -191,7 +201,10 @@ export default function AdminPlansPage() {
 
             <form onSubmit={handleSave} className="plan-modal-body">
               {message && (
-                <div className={`credit-message credit-message--${message.type}`} style={{ marginBottom: 20 }}>
+                <div
+                  className={`credit-message credit-message--${message.type}`}
+                  style={{ marginBottom: 20 }}
+                >
                   {message.type === "success" ? <Check size={16} /> : <XCircle size={16} />}
                   {message.text}
                 </div>
@@ -202,15 +215,18 @@ export default function AdminPlansPage() {
                   <label className="admin-label">Tên gói</label>
                   <input
                     value={editingPlan.name}
-                    onChange={e => setEditingPlan({...editingPlan, name: e.target.value})}
-                    className="admin-input" required
+                    onChange={(e) => setEditingPlan({ ...editingPlan, name: e.target.value })}
+                    className="admin-input"
+                    required
                   />
                 </div>
                 <div className="admin-form-group">
                   <label className="admin-label">Mô tả</label>
                   <input
                     value={editingPlan.description ?? ""}
-                    onChange={e => setEditingPlan({...editingPlan, description: e.target.value})}
+                    onChange={(e) =>
+                      setEditingPlan({ ...editingPlan, description: e.target.value })
+                    }
                     className="admin-input"
                   />
                 </div>
@@ -219,8 +235,14 @@ export default function AdminPlansPage() {
                   <input
                     type="number"
                     value={editingPlan.priceMonthly}
-                    onChange={e => setEditingPlan({...editingPlan, priceMonthly: parseInt(e.target.value) || 0})}
-                    className="admin-input" required
+                    onChange={(e) =>
+                      setEditingPlan({
+                        ...editingPlan,
+                        priceMonthly: parseInt(e.target.value) || 0,
+                      })
+                    }
+                    className="admin-input"
+                    required
                   />
                 </div>
                 <div className="admin-form-group">
@@ -228,8 +250,11 @@ export default function AdminPlansPage() {
                   <input
                     type="number"
                     value={editingPlan.priceYearly}
-                    onChange={e => setEditingPlan({...editingPlan, priceYearly: parseInt(e.target.value) || 0})}
-                    className="admin-input" required
+                    onChange={(e) =>
+                      setEditingPlan({ ...editingPlan, priceYearly: parseInt(e.target.value) || 0 })
+                    }
+                    className="admin-input"
+                    required
                   />
                 </div>
               </div>
@@ -237,49 +262,64 @@ export default function AdminPlansPage() {
               <div className="plan-form-section">
                 <h3 className="plan-section-title">Quyền truy cập Templates</h3>
                 <div className="plan-templates-grid">
-                  {AVAILABLE_TEMPLATES.map(t => (
+                  {AVAILABLE_TEMPLATES.map((t) => (
                     <label key={t.id} className="plan-template-checkbox">
                       <input
                         type="checkbox"
-                        checked={editingPlan.templates.some(pt => pt.templateId === t.id)}
+                        checked={editingPlan.templates.some((pt) => pt.templateId === t.id)}
                         onChange={() => handleTemplateToggle(t.id)}
                       />
-                      <span>{t.name} <small>({t.id})</small></span>
+                      <span>
+                        {t.name} <small>({t.id})</small>
+                      </span>
                     </label>
                   ))}
                 </div>
               </div>
 
               <div className="plan-form-section">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                  <h3 className="plan-section-title" style={{ margin: 0 }}>Cấu hình Features</h3>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 12,
+                  }}
+                >
+                  <h3 className="plan-section-title" style={{ margin: 0 }}>
+                    Cấu hình Features
+                  </h3>
                   <button type="button" onClick={handleAddFeature} className="plan-add-feature-btn">
                     <Plus size={14} /> Thêm Feature
                   </button>
                 </div>
-                
+
                 <div className="plan-features-list">
                   {editingPlan.features.map((f, i) => (
                     <div key={i} className="plan-feature-row">
                       <input
                         placeholder="Key (vd: max_cv_count)"
                         value={f.key}
-                        onChange={e => handleFeatureChange(i, "key", e.target.value)}
+                        onChange={(e) => handleFeatureChange(i, "key", e.target.value)}
                         className="admin-input"
                       />
                       <input
                         placeholder="Value (vd: 2)"
                         value={f.value}
-                        onChange={e => handleFeatureChange(i, "value", e.target.value)}
+                        onChange={(e) => handleFeatureChange(i, "value", e.target.value)}
                         className="admin-input"
                       />
                       <input
                         placeholder="Label hiển thị"
                         value={f.label ?? ""}
-                        onChange={e => handleFeatureChange(i, "label", e.target.value)}
+                        onChange={(e) => handleFeatureChange(i, "label", e.target.value)}
                         className="admin-input"
                       />
-                      <button type="button" onClick={() => handleRemoveFeature(i)} className="plan-feature-remove">
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveFeature(i)}
+                        className="plan-feature-remove"
+                      >
                         <Trash2 size={16} />
                       </button>
                     </div>
@@ -292,16 +332,25 @@ export default function AdminPlansPage() {
                   <input
                     type="checkbox"
                     checked={editingPlan.isActive}
-                    onChange={e => setEditingPlan({...editingPlan, isActive: e.target.checked})}
+                    onChange={(e) => setEditingPlan({ ...editingPlan, isActive: e.target.checked })}
                   />
                   Gói đang kích hoạt (Active)
                 </label>
-                
+
                 <div style={{ display: "flex", gap: 10 }}>
-                  <button type="button" onClick={() => setEditingPlan(null)} className="plan-btn-cancel">
+                  <button
+                    type="button"
+                    onClick={() => setEditingPlan(null)}
+                    className="plan-btn-cancel"
+                  >
                     Hủy
                   </button>
-                  <button type="submit" disabled={saving} className="admin-submit-btn" style={{ margin: 0, padding: "10px 24px" }}>
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="admin-submit-btn"
+                    style={{ margin: 0, padding: "10px 24px" }}
+                  >
                     {saving ? "Đang lưu..." : "Lưu thay đổi"}
                   </button>
                 </div>

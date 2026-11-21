@@ -36,9 +36,7 @@ export default function TemplatesSection() {
     }
   };
 
-  const filtered = active === "all"
-    ? templates
-    : templates.filter((t) => t.category === active);
+  const filtered = active === "all" ? templates : templates.filter((t) => t.category === active);
 
   return (
     <section className="templates-section" id="templates">
@@ -67,7 +65,10 @@ export default function TemplatesSection() {
         <div className="template-gallery" id="template-gallery">
           {filtered.map((tpl) => (
             <div key={tpl.id} className="template-card">
-              <div className="template-preview" style={{ "--accent": tpl.accent } as React.CSSProperties}>
+              <div
+                className="template-preview"
+                style={{ "--accent": tpl.accent } as React.CSSProperties}
+              >
                 <div className="tpl-header-bar" style={{ background: tpl.accent }}></div>
                 <div className="tpl-lines">
                   <div className="tpl-line tpl-line-lg"></div>
@@ -97,9 +98,7 @@ export default function TemplatesSection() {
             Xem tất cả 20+ templates →
           </a>
         </div>
-
       </div>
-
     </section>
   );
 }

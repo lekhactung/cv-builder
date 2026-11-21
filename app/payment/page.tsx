@@ -7,8 +7,8 @@ import { CheckCircle, XCircle, Clock, PartyPopper } from "lucide-react";
 
 function PaymentResultContent() {
   const searchParams = useSearchParams();
-  const router       = useRouter();
-  const status       = searchParams.get("status"); // success | cancelled | failed
+  const router = useRouter();
+  const status = searchParams.get("status"); // success | cancelled | failed
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
@@ -28,10 +28,30 @@ function PaymentResultContent() {
 
   if (status === "success") {
     return (
-      <div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <div
+        style={{
+          minHeight: "80vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 24,
+        }}
+      >
         <div style={{ textAlign: "center", maxWidth: 480 }}>
           <CheckCircle size={64} color="#22c55e" style={{ marginBottom: 20 }} />
-          <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>Thanh toán thành công! <PartyPopper size={28} /></h1>
+          <h1
+            style={{
+              fontSize: 28,
+              fontWeight: 800,
+              marginBottom: 12,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+            }}
+          >
+            Thanh toán thành công! <PartyPopper size={28} />
+          </h1>
           <p style={{ color: "var(--text-muted)", marginBottom: 24 }}>
             Tài khoản của bạn đang được kích hoạt. Quá trình này có thể mất vài giây.
           </p>
@@ -41,10 +61,15 @@ function PaymentResultContent() {
           <button
             onClick={() => router.push("/dashboard/billing")}
             style={{
-              marginTop: 20, padding: "12px 28px", borderRadius: 10,
+              marginTop: 20,
+              padding: "12px 28px",
+              borderRadius: 10,
               background: "linear-gradient(135deg, #7c3aed, #a855f7)",
-              color: "white", border: "none", cursor: "pointer",
-              fontSize: 15, fontWeight: 600,
+              color: "white",
+              border: "none",
+              cursor: "pointer",
+              fontSize: 15,
+              fontWeight: 600,
             }}
           >
             Đến trang Billing
@@ -56,7 +81,15 @@ function PaymentResultContent() {
 
   if (status === "cancelled") {
     return (
-      <div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <div
+        style={{
+          minHeight: "80vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 24,
+        }}
+      >
         <div style={{ textAlign: "center", maxWidth: 480 }}>
           <Clock size={64} color="#f59e0b" style={{ marginBottom: 20 }} />
           <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12 }}>Thanh toán đã hủy</h1>
@@ -67,10 +100,14 @@ function PaymentResultContent() {
             <button
               onClick={() => router.push("/pricing")}
               style={{
-                padding: "12px 28px", borderRadius: 10,
+                padding: "12px 28px",
+                borderRadius: 10,
                 background: "linear-gradient(135deg, #7c3aed, #a855f7)",
-                color: "white", border: "none", cursor: "pointer",
-                fontSize: 15, fontWeight: 600,
+                color: "white",
+                border: "none",
+                cursor: "pointer",
+                fontSize: 15,
+                fontWeight: 600,
               }}
             >
               Thử lại
@@ -78,10 +115,14 @@ function PaymentResultContent() {
             <button
               onClick={() => router.push("/dashboard")}
               style={{
-                padding: "12px 28px", borderRadius: 10,
+                padding: "12px 28px",
+                borderRadius: 10,
                 border: "1px solid var(--border-primary)",
-                background: "transparent", cursor: "pointer",
-                fontSize: 15, fontWeight: 600, color: "var(--text-primary)",
+                background: "transparent",
+                cursor: "pointer",
+                fontSize: 15,
+                fontWeight: 600,
+                color: "var(--text-primary)",
               }}
             >
               Về Dashboard
@@ -93,7 +134,15 @@ function PaymentResultContent() {
   }
 
   return (
-    <div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+    <div
+      style={{
+        minHeight: "80vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 24,
+      }}
+    >
       <div style={{ textAlign: "center", maxWidth: 480 }}>
         <XCircle size={64} color="#ef4444" style={{ marginBottom: 20 }} />
         <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12 }}>Thanh toán thất bại</h1>
@@ -103,10 +152,14 @@ function PaymentResultContent() {
         <button
           onClick={() => router.push("/pricing")}
           style={{
-            padding: "12px 28px", borderRadius: 10,
+            padding: "12px 28px",
+            borderRadius: 10,
             background: "linear-gradient(135deg, #7c3aed, #a855f7)",
-            color: "white", border: "none", cursor: "pointer",
-            fontSize: 15, fontWeight: 600,
+            color: "white",
+            border: "none",
+            cursor: "pointer",
+            fontSize: 15,
+            fontWeight: 600,
           }}
         >
           Thử lại
@@ -118,7 +171,20 @@ function PaymentResultContent() {
 
 export default function PaymentResultPage() {
   return (
-    <Suspense fallback={<div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Đang tải...</div>}>
+    <Suspense
+      fallback={
+        <div
+          style={{
+            minHeight: "80vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          Đang tải...
+        </div>
+      }
+    >
       <PaymentResultContent />
     </Suspense>
   );

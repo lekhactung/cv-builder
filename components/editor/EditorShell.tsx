@@ -1,93 +1,118 @@
-"use client"
-import { useEffect, useState, useCallback, useRef } from "react"
-import { useEditorStore } from "@/lib/stores/editorStore"
-import { CvDocument } from "@/lib/schemas/block.schema"
-import { updateCvAction, createCvAction } from "@/lib/actions/cv"
-import { Layers } from "lucide-react"
-import EditorToolbar from "./EditorToolbar"
-import BlockCanvas from "./BlockCanvas"
-import CvPreview from "./CvPreview"
-import TemplatePicker from "./TemplatePicker"
+"use client";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useEditorStore } from "@/lib/stores/editorStore";
+import { CvDocument } from "@/lib/schemas/block.schema";
+import { updateCvAction, createCvAction } from "@/lib/actions/cv";
+import { Layers } from "lucide-react";
+import EditorToolbar from "./EditorToolbar";
+import BlockCanvas from "./BlockCanvas";
+import CvPreview from "./CvPreview";
+import TemplatePicker from "./TemplatePicker";
 
 interface Props {
-  cvId: string
-  initialTitle: string
-  initialTemplateName: string
-  initialTemplateId: string
-  initialDocument: CvDocument
+  cvId: string;
+  initialTitle: string;
+  initialTemplateName: string;
+  initialTemplateId: string;
+  initialDocument: CvDocument;
 }
 
-export default function EditorShell({ cvId, initialTitle, initialTemplateName, initialTemplateId, initialDocument }: Props) {
+export default function EditorShell({
+  cvId,
+  initialTitle,
+  initialTemplateName,
+  initialTemplateId,
+  initialDocument,
+}: Props) {
   const {
-    document, title, saved, saving, saveError, lastSavedAt, templateName, templateId,
-    loadDocument, setTitle, setSaved, setSaving,
-    undo, redo, canUndo, canRedo,
-  } = useEditorStore()
+    document,
+    title,
+    saved,
+    saving,
+    saveError,
+    lastSavedAt,
+    templateName,
+    templateId,
+    loadDocument,
+    setTitle,
+    setSaved,
+    setSaving,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  } = useEditorStore();
 
-  const [showTemplates, setShowTemplates] = useState(cvId === "new")
-  const [currentCvId, setCurrentCvId] = useState(cvId)
-  const [isExporting, setIsExporting] = useState(false)
-  const autoSaveTime = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const [showTemplates, setShowTemplates] = useState(cvId === "new");
+  const [currentCvId, setCurrentCvId] = useState(cvId);
+  const [isExporting, setIsExporting] = useState(false);
+  const autoSaveTime = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  const templateNameRef = useRef(templateName)
-  const templateIdRef = useRef(templateId)
-  const currentCvIdRef = useRef(currentCvId)
-  useEffect(() => { templateNameRef.current = templateName }, [templateName])
-  useEffect(() => { templateIdRef.current = templateId }, [templateId])
-  useEffect(() => { currentCvIdRef.current = currentCvId }, [currentCvId])
+  const templateNameRef = useRef(templateName);
+  const templateIdRef = useRef(templateId);
+  const currentCvIdRef = useRef(currentCvId);
+  useEffect(() => {
+    templateNameRef.current = templateName;
+  }, [templateName]);
+  useEffect(() => {
+    templateIdRef.current = templateId;
+  }, [templateId]);
+  useEffect(() => {
+    currentCvIdRef.current = currentCvId;
+  }, [currentCvId]);
 
   useEffect(() => {
-    loadDocument(cvId, initialTitle, initialTemplateName, initialTemplateId, initialDocument)
-  }, [cvId])
+    loadDocument(cvId, initialTitle, initialTemplateName, initialTemplateId, initialDocument);
+  }, [cvId]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "z") {
-        e.preventDefault()
-        if (e.shiftKey) redo()
-        else undo()
+        e.preventDefault();
+        if (e.shiftKey) redo();
+        else undo();
       }
-    }
-    window.addEventListener("keydown", handler)
-    return () => window.removeEventListener("keydown", handler)
-  }, [undo, redo])
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [undo, redo]);
 
   useEffect(() => {
-    if (saved) return
-    clearTimeout(autoSaveTime.current)
+    if (saved) return;
+    clearTimeout(autoSaveTime.current);
     autoSaveTime.current = setTimeout(async () => {
-      setSaving(true)
-      useEditorStore.getState().setSaveError(null)
-    
-      const latestCvId = currentCvIdRef.current
-      const latestTemplateName = templateNameRef.current
-      const latestTemplateId = templateIdRef.current
+      setSaving(true);
+      useEditorStore.getState().setSaveError(null);
+
+      const latestCvId = currentCvIdRef.current;
+      const latestTemplateName = templateNameRef.current;
+      const latestTemplateId = templateIdRef.current;
       try {
         if (latestCvId === "new") {
-          const newId = await createCvAction(latestTemplateId, document as any, title)
-          setCurrentCvId(newId)
-          currentCvIdRef.current = newId
-          window.history.replaceState(null, "", `/editor/${newId}`)
+          const newId = await createCvAction(latestTemplateId, document as any, title);
+          setCurrentCvId(newId);
+          currentCvIdRef.current = newId;
+          window.history.replaceState(null, "", `/editor/${newId}`);
         } else {
-          await updateCvAction(latestCvId, document as any, title, latestTemplateName)
+          await updateCvAction(latestCvId, document as any, title, latestTemplateName);
         }
-        setSaved(true)
-        useEditorStore.getState().setLastSavedAt(new Date())
+        setSaved(true);
+        useEditorStore.getState().setLastSavedAt(new Date());
       } catch (err) {
-        console.error("Autosave failed:", err)
-        useEditorStore.getState().setSaveError("Lỗi kết nối. Không thể lưu CV.")
+        console.error("Autosave failed:", err);
+        useEditorStore.getState().setSaveError("Lỗi kết nối. Không thể lưu CV.");
       } finally {
-        setSaving(false)
+        setSaving(false);
       }
-    }, 1500)
-  }, [document, title, saved])
+    }, 1500);
+  }, [document, title, saved]);
 
   const handleExportPdf = useCallback(async () => {
-    setIsExporting(true)
-    await new Promise((r) => setTimeout(r, 80))
-    window.print()
-    setIsExporting(false)
-  }, [])
+    setIsExporting(true);
+    await new Promise((r) => setTimeout(r, 80));
+    window.print();
+    setIsExporting(false);
+  }, []);
 
   return (
     <div className="flex flex-col h-screen print:h-auto print:block bg-slate-50 dark:bg-slate-900 overflow-hidden print:overflow-visible font-sans">
@@ -95,8 +120,8 @@ export default function EditorShell({ cvId, initialTitle, initialTemplateName, i
         title={title}
         onTitleChange={setTitle}
         onSave={() => {
-          clearTimeout(autoSaveTime.current)
-          useEditorStore.getState().setSaved(false)
+          clearTimeout(autoSaveTime.current);
+          useEditorStore.getState().setSaved(false);
         }}
         saving={saving}
         saved={saved}
@@ -152,5 +177,5 @@ export default function EditorShell({ cvId, initialTitle, initialTemplateName, i
       </div>
       {showTemplates && <TemplatePicker onClose={() => setShowTemplates(false)} />}
     </div>
-  )
+  );
 }

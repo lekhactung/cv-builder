@@ -1,12 +1,4 @@
-
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  Font,
-} from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet, Font } from "@react-pdf/renderer";
 import { CvData } from "@/lib/schemas/cv.schema";
 const LEVEL_MAP: Record<string, number> = {
   beginner: 25,
@@ -199,7 +191,9 @@ export default function ModernTemplatePdf({ data, sectionOrder = DEFAULT_ORDER }
             {exp.description && (
               <View style={s.itemDesc}>
                 {exp.description.split("\n").map((line, i) => (
-                  <Text key={i} style={s.itemDescLine}>{line}</Text>
+                  <Text key={i} style={s.itemDescLine}>
+                    {line}
+                  </Text>
                 ))}
               </View>
             )}
@@ -217,10 +211,14 @@ export default function ModernTemplatePdf({ data, sectionOrder = DEFAULT_ORDER }
             <View style={s.itemHeader}>
               <View>
                 <Text style={s.itemTitle}>{edu.school}</Text>
-                <Text style={s.itemSubtitle}>{edu.degree} — {edu.field}</Text>
+                <Text style={s.itemSubtitle}>
+                  {edu.degree} — {edu.field}
+                </Text>
                 {edu.gpa && <Text style={s.itemGpa}>GPA: {edu.gpa}</Text>}
               </View>
-              <Text style={s.itemDate}>{edu.startDate} — {edu.endDate}</Text>
+              <Text style={s.itemDate}>
+                {edu.startDate} — {edu.endDate}
+              </Text>
             </View>
           </View>
         ))}
@@ -261,10 +259,10 @@ export default function ModernTemplatePdf({ data, sectionOrder = DEFAULT_ORDER }
           <Text style={s.name}>{personal.fullName || "Họ và Tên"}</Text>
           <Text style={s.jobTitle}>{personal.jobTitle || "Chức danh"}</Text>
           <View style={s.contactRow}>
-            {personal.email    && <Text style={s.contactText}>Email: {personal.email}</Text>}
-            {personal.phone    && <Text style={s.contactText}>Điện thoại: {personal.phone}</Text>}
+            {personal.email && <Text style={s.contactText}>Email: {personal.email}</Text>}
+            {personal.phone && <Text style={s.contactText}>Điện thoại: {personal.phone}</Text>}
             {personal.location && <Text style={s.contactText}>Địa chỉ: {personal.location}</Text>}
-            {personal.website  && <Text style={s.contactText}>Website: {personal.website}</Text>}
+            {personal.website && <Text style={s.contactText}>Website: {personal.website}</Text>}
             {personal.linkedin && <Text style={s.contactText}>LinkedIn: {personal.linkedin}</Text>}
           </View>
         </View>

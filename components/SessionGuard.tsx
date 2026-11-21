@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { useSession, signOut } from "next-auth/react"
-import { useEffect } from "react"
+import { useSession, signOut } from "next-auth/react";
+import { useEffect } from "react";
 
 export function SessionGuard({ children }: { children: React.ReactNode }) {
-    const { data: session } = useSession()
+  const { data: session } = useSession();
 
-    useEffect(() => {
-        if(session?.error === "RefreshTokenExpired"){
-            signOut({callbackUrl: "/auth"})
-        }
-    }, [session])
+  useEffect(() => {
+    if (session?.error === "RefreshTokenExpired") {
+      signOut({ callbackUrl: "/auth" });
+    }
+  }, [session]);
 
-    return <>{children}</>
+  return <>{children}</>;
 }

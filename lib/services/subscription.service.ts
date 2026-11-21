@@ -2,40 +2,38 @@ import { prisma } from "@/lib/prisma";
 import { SubscriptionStatus } from "@prisma/client";
 
 export const subscriptionService = {
-    async getActiveSubscription(userId: string) {
-        return prisma.subscription.findFirst({
-            where: { userId, status: { in: ["ACTIVE", "TRIALING"] } },
-            include:
-            {
-                plan: {
-                    include:
-                        { features: true }
-                }
-            },
-        })
-    },
+  async getActiveSubscription(userId: string) {
+    return prisma.subscription.findFirst({
+      where: { userId, status: { in: ["ACTIVE", "TRIALING"] } },
+      include: {
+        plan: {
+          include: { features: true },
+        },
+      },
+    });
+  },
 
-    async getSubscription(userId: string) {
-        return prisma.subscription.findUnique({
-            where: { userId },
-            include: { plan: true },
-        })
-    },
+  async getSubscription(userId: string) {
+    return prisma.subscription.findUnique({
+      where: { userId },
+      include: { plan: true },
+    });
+  },
 
-    async cancelAtPeriodEnd(userId: string) {
-        return prisma.subscription.update({
-            where: { userId },
-            data: {
-                cancelAtPeriodEnd: true,
-                cancelledAt: new Date(),
-            }
-        })
-    },
+  async cancelAtPeriodEnd(userId: string) {
+    return prisma.subscription.update({
+      where: { userId },
+      data: {
+        cancelAtPeriodEnd: true,
+        cancelledAt: new Date(),
+      },
+    });
+  },
 
-    async expireSubscription(subscriptionId: string) {
-        return prisma.subscription.update({
-            where: { id: subscriptionId },
-            data: { status: "EXPIRED" }
-        })
-    }
-}
+  async expireSubscription(subscriptionId: string) {
+    return prisma.subscription.update({
+      where: { id: subscriptionId },
+      data: { status: "EXPIRED" },
+    });
+  },
+};

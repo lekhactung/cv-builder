@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 import { useTransition, useState } from "react";
 import { deleteCvAction } from "@/lib/actions/cv";
@@ -35,16 +35,18 @@ export default function CvCard({ id, title, updatedAt, template = "Modern" }: Cv
   };
 
   const handleDelete = () => {
-    const confirmDelete = window.confirm(`Bạn có chắc muốn xóa CV "${title}" không? Hành động này không thể hoàn tác.`);
+    const confirmDelete = window.confirm(
+      `Bạn có chắc muốn xóa CV "${title}" không? Hành động này không thể hoàn tác.`,
+    );
 
     if (confirmDelete) {
       startTransition(async () => {
         await deleteCvAction(id);
-      })
+      });
     }
-  }
+  };
 
-  const formattedDate = formatDateTime(updatedAt)
+  const formattedDate = formatDateTime(updatedAt);
 
   return (
     <div className="db-cv-card">
@@ -63,7 +65,9 @@ export default function CvCard({ id, title, updatedAt, template = "Modern" }: Cv
         <h3 className="db-cv-title">{title}</h3>
         <p className="db-cv-meta">
           <span className="badge badge-primary">{template}</span>
-          <span className="db-cv-date" suppressHydrationWarning>Cập nhật {formattedDate}</span>
+          <span className="db-cv-date" suppressHydrationWarning>
+            Cập nhật {formattedDate}
+          </span>
         </p>
       </div>
       {/* Actions */}
@@ -79,16 +83,13 @@ export default function CvCard({ id, title, updatedAt, template = "Modern" }: Cv
         >
           {isFetchingData || isExporting ? "Đang tải..." : <Download size={16} />}
         </button>
-        <button className="btn btn-ghost btn-sm text-red-500 hover:text-red-700 hover:bg-red-50"
+        <button
+          className="btn btn-ghost btn-sm text-red-500 hover:text-red-700 hover:bg-red-50"
           onClick={handleDelete}
           disabled={isPending}
           title="Xóa CV"
         >
-          {isPending ? (
-            "Đang xóa..."
-          ) : (
-            <Trash2 size={16} />
-          )}
+          {isPending ? "Đang xóa..." : <Trash2 size={16} />}
         </button>
       </div>
     </div>

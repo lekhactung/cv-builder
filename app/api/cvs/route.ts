@@ -11,13 +11,10 @@ export async function POST(req: Request) {
   }
 
   const userId = session.user.id;
-  const body   = await req.json().catch(() => ({}));
+  const body = await req.json().catch(() => ({}));
   const templateId = (body.template ?? "single").toString().trim();
 
-  const canAccessTemplate = await entitlementService.canUserAccessTemplate(
-    userId,
-    templateId
-  );
+  const canAccessTemplate = await entitlementService.canUserAccessTemplate(userId, templateId);
   if (!canAccessTemplate) {
     return NextResponse.json(
       {
@@ -25,7 +22,7 @@ export async function POST(req: Request) {
         code: "TEMPLATE_NOT_ALLOWED",
         upgradeUrl: "/pricing",
       },
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -37,15 +34,15 @@ export async function POST(req: Request) {
         code: "CV_LIMIT_REACHED",
         upgradeUrl: "/pricing",
       },
-      { status: 403 }
+      { status: 403 },
     );
   }
 
   const cv = await prisma.cV.create({
     data: {
-      title:    (body.title ?? "CV Không Tiêu Đề").toString().trim().slice(0, 100),
+      title: (body.title ?? "CV Không Tiêu Đề").toString().trim().slice(0, 100),
       template: templateId,
-      data:     CvDataSchema.parse({}).valueOf() as object,
+      data: CvDataSchema.parse({}).valueOf() as object,
       userId,
     },
   });

@@ -6,10 +6,12 @@ import { Suspense } from "react";
 const errorMessages: Record<string, string> = {
   OAuthSignin: "Không thể khởi tạo đăng nhập Google. Vui lòng thử lại.",
   OAuthCallback: "Đăng nhập Google thất bại. Vui lòng thử lại.",
-  OAuthCreateAccount: "Không thể tạo tài khoản từ Google. Email có thể đã được dùng với phương thức khác.",
+  OAuthCreateAccount:
+    "Không thể tạo tài khoản từ Google. Email có thể đã được dùng với phương thức khác.",
   EmailCreateAccount: "Không thể tạo tài khoản với email này.",
   Callback: "Có lỗi xảy ra trong quá trình xác thực. Vui lòng thử lại.",
-  OAuthAccountNotLinked: "Email này đã được đăng ký bằng phương thức khác. Vui lòng đăng nhập bằng email & mật khẩu.",
+  OAuthAccountNotLinked:
+    "Email này đã được đăng ký bằng phương thức khác. Vui lòng đăng nhập bằng email & mật khẩu.",
   EmailSignin: "Không thể gửi email đăng nhập.",
   CredentialsSignin: "Email hoặc mật khẩu không đúng.",
   SessionRequired: "Vui lòng đăng nhập để truy cập trang này.",
@@ -34,9 +36,24 @@ function AuthErrorContent() {
           <Link href="/" className="nav-logo">
             <div className="logo-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-                <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-                <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                <path
+                  d="M12 2L2 7L12 12L22 7L12 2Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M2 17L12 22L22 17"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M2 12L12 17L22 12"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
               </svg>
             </div>
             Resume<span className="logo-ai">AI</span>
@@ -44,17 +61,26 @@ function AuthErrorContent() {
         </div>
 
         <div style={{ margin: "2rem 0" }}>
-          <div style={{
-            width: 56,
-            height: 56,
-            borderRadius: "50%",
-            background: "rgba(239,68,68,0.15)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            margin: "0 auto 1.25rem",
-          }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: "50%",
+              background: "rgba(239,68,68,0.15)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto 1.25rem",
+            }}
+          >
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#ef4444"
+              strokeWidth="2"
+            >
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />

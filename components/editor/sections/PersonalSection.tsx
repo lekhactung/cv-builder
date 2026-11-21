@@ -6,8 +6,9 @@ interface Props {
 }
 
 export default function PersonalSection({ data, onChange }: Props) {
-  const set = (field: keyof Personal) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    onChange({ ...data, [field]: e.target.value });
+  const set =
+    (field: keyof Personal) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      onChange({ ...data, [field]: e.target.value });
 
   return (
     <div className="editor-section-form">
@@ -16,39 +17,75 @@ export default function PersonalSection({ data, onChange }: Props) {
       <div className="form-row">
         <div className="form-group">
           <label className="form-label">Họ và tên</label>
-          <input className="form-input" value={data.fullName} onChange={set("fullName")} placeholder="Nguyễn Văn A" />
+          <input
+            className="form-input"
+            value={data.fullName}
+            onChange={set("fullName")}
+            placeholder="Nguyễn Văn A"
+          />
         </div>
         <div className="form-group">
           <label className="form-label">Chức danh</label>
-          <input className="form-input" value={data.jobTitle} onChange={set("jobTitle")} placeholder="Software Engineer" />
+          <input
+            className="form-input"
+            value={data.jobTitle}
+            onChange={set("jobTitle")}
+            placeholder="Software Engineer"
+          />
         </div>
       </div>
 
       <div className="form-row">
         <div className="form-group">
           <label className="form-label">Email</label>
-          <input className="form-input" type="email" value={data.email} onChange={set("email")} placeholder="you@email.com" />
+          <input
+            className="form-input"
+            type="email"
+            value={data.email}
+            onChange={set("email")}
+            placeholder="you@email.com"
+          />
         </div>
         <div className="form-group">
           <label className="form-label">Số điện thoại</label>
-          <input className="form-input" value={data.phone} onChange={set("phone")} placeholder="0912 345 678" />
+          <input
+            className="form-input"
+            value={data.phone}
+            onChange={set("phone")}
+            placeholder="0912 345 678"
+          />
         </div>
       </div>
 
       <div className="form-row">
         <div className="form-group">
           <label className="form-label">Địa chỉ</label>
-          <input className="form-input" value={data.location} onChange={set("location")} placeholder="Hà Nội, Việt Nam" />
+          <input
+            className="form-input"
+            value={data.location}
+            onChange={set("location")}
+            placeholder="Hà Nội, Việt Nam"
+          />
         </div>
         <div className="form-group">
           <label className="form-label">Website / Portfolio</label>
-          <input className="form-input" value={data.website} onChange={set("website")} placeholder="https://..." />
+          <input
+            className="form-input"
+            value={data.website}
+            onChange={set("website")}
+            placeholder="https://..."
+          />
         </div>
       </div>
 
       <div className="form-group">
         <label className="form-label">LinkedIn</label>
-        <input className="form-input" value={data.linkedin} onChange={set("linkedin")} placeholder="linkedin.com/in/..." />
+        <input
+          className="form-input"
+          value={data.linkedin}
+          onChange={set("linkedin")}
+          placeholder="linkedin.com/in/..."
+        />
       </div>
 
       <div className="form-group">

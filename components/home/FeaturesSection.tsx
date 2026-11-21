@@ -23,15 +23,15 @@ export default function FeaturesSection() {
             </div>
             <h3>ATS Score Engine</h3>
             <p>
-              Phân tích CV theo tiêu chí ATS thực tế. Điểm 0–100 với breakdown chi tiết: Keywords, Format, Content,
-              Impact.
+              Phân tích CV theo tiêu chí ATS thực tế. Điểm 0–100 với breakdown chi tiết: Keywords,
+              Format, Content, Impact.
             </p>
             <div className="feature-demo-ats">
               {[
                 { label: "Keywords", val: 82, color: "#6366F1" },
-                { label: "Format",   val: 91, color: "#22D3EE" },
-                { label: "Content",  val: 74, color: "#10B981" },
-                { label: "Impact",   val: 88, color: "#F59E0B" },
+                { label: "Format", val: 91, color: "#22D3EE" },
+                { label: "Content", val: 74, color: "#10B981" },
+                { label: "Impact", val: 88, color: "#F59E0B" },
               ].map(({ label, val, color }) => (
                 <div className="ats-bar-item" key={label}>
                   <span>{label}</span>
@@ -53,7 +53,9 @@ export default function FeaturesSection() {
               <FileEdit size={28} className="text-primary" />
             </div>
             <h3>AI Rewrite</h3>
-            <p>Biến bullet points nhàm chán thành câu mạnh mẽ với action verbs và số liệu cụ thể.</p>
+            <p>
+              Biến bullet points nhàm chán thành câu mạnh mẽ với action verbs và số liệu cụ thể.
+            </p>
             <div className="rewrite-demo">
               <div className="rewrite-before">
                 <span className="rewrite-label">Trước</span>

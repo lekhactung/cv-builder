@@ -1,14 +1,14 @@
 import { CvData } from "@/lib/schemas/cv.schema";
-import PersonalSection   from "./sections/PersonalSection";
+import PersonalSection from "./sections/PersonalSection";
 import ExperienceSection from "./sections/ExperienceSection";
-import EducationSection  from "./sections/EducationSection";
-import SkillsSection     from "./sections/SkillsSection";
+import EducationSection from "./sections/EducationSection";
+import SkillsSection from "./sections/SkillsSection";
 
 type Section = "personal" | "experience" | "education" | "skills";
 
 interface Props {
-  section:  Section;
-  cvData:   CvData;
+  section: Section;
+  cvData: CvData;
   onUpdate: (updater: (prev: CvData) => CvData) => void;
 }
 

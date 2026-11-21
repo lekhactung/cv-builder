@@ -24,9 +24,7 @@ interface Plan {
 }
 
 function getDisplayFeatures(features: PlanFeature[]): string[] {
-  return features
-    .filter((f) => f.label && f.value !== "false")
-    .map((f) => f.label as string);
+  return features.filter((f) => f.label && f.value !== "false").map((f) => f.label as string);
 }
 
 export default function PricingSection() {
@@ -34,8 +32,8 @@ export default function PricingSection() {
   const router = useRouter();
 
   const [interval, setInterval] = useState<"MONTHLY" | "YEARLY">("MONTHLY");
-  const [loading, setLoading]   = useState<string | null>(null);
-  const [plans, setPlans]       = useState<Plan[]>([]);
+  const [loading, setLoading] = useState<string | null>(null);
+  const [plans, setPlans] = useState<Plan[]>([]);
   const [plansLoading, setPlansLoading] = useState(true);
 
   useEffect(() => {
@@ -64,28 +62,25 @@ export default function PricingSection() {
       });
       const data = await res.json();
       if (data.checkoutUrl) window.location.href = data.checkoutUrl;
-    } catch {}
-    finally { setLoading(null); }
+    } catch {
+    } finally {
+      setLoading(null);
+    }
   };
 
   const formatPrice = (price: number) =>
-    price === 0
-      ? "Miễn phí"
-      : new Intl.NumberFormat("vi-VN").format(price) + "₫";
+    price === 0 ? "Miễn phí" : new Intl.NumberFormat("vi-VN").format(price) + "₫";
 
   return (
     <section className="pricing-section" id="pricing">
       <div className="container">
-
         {/* Section Header */}
         <div className="section-header">
           <div className="section-badge">Bảng giá</div>
           <h2 className="section-title">
             Chọn gói <span className="gradient-text">phù hợp với bạn</span>
           </h2>
-          <p className="section-subtitle">
-            Bắt đầu miễn phí. Nâng cấp khi cần thêm sức mạnh AI.
-          </p>
+          <p className="section-subtitle">Bắt đầu miễn phí. Nâng cấp khi cần thêm sức mạnh AI.</p>
         </div>
 
         {/* Toggle Monthly / Yearly */}
@@ -116,25 +111,23 @@ export default function PricingSection() {
         {!plansLoading && (
           <div className="pricing-grid">
             {plans.map((plan) => {
-              const highlight       = plan.slug === "PRO";
+              const highlight = plan.slug === "PRO";
               const displayFeatures = getDisplayFeatures(plan.features);
-              const price           = interval === "MONTHLY" ? plan.priceMonthly : plan.priceYearly;
+              const price = interval === "MONTHLY" ? plan.priceMonthly : plan.priceYearly;
 
               return (
                 <div
                   key={plan.slug}
                   className={`pricing-card${highlight ? " pricing-card-highlight" : ""}`}
                 >
-                  {highlight && (
-                    <div className="pricing-popular-badge">⭐ Phổ biến nhất</div>
-                  )}
+                  {highlight && <div className="pricing-popular-badge">⭐ Phổ biến nhất</div>}
 
                   {/* Icon + tên */}
                   <div className="pricing-plan-header">
                     <div className="pricing-plan-icon">
                       {plan.slug === "PREMIUM" && <Crown size={20} />}
-                      {plan.slug === "PRO"     && <Zap   size={20} />}
-                      {plan.slug === "FREE"    && <Star  size={20} />}
+                      {plan.slug === "PRO" && <Zap size={20} />}
+                      {plan.slug === "FREE" && <Star size={20} />}
                     </div>
                     <span className="pricing-plan-name">{plan.name}</span>
                   </div>
@@ -168,9 +161,11 @@ export default function PricingSection() {
                   >
                     {loading === plan.slug
                       ? "Đang xử lý..."
-                      : plan.slug === "FREE"    ? "Bắt đầu miễn phí"
-                      : plan.slug === "PRO"     ? "Nâng cấp Pro"
-                      : "Nâng cấp Premium"}
+                      : plan.slug === "FREE"
+                        ? "Bắt đầu miễn phí"
+                        : plan.slug === "PRO"
+                          ? "Nâng cấp Pro"
+                          : "Nâng cấp Premium"}
                   </button>
                 </div>
               );
@@ -184,7 +179,6 @@ export default function PricingSection() {
             Xem chi tiết so sánh các gói →
           </Link>
         </div>
-
       </div>
     </section>
   );

@@ -4,15 +4,23 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useTheme } from "@/components/ThemeProvider";
-import { Sun, Moon, ChevronDown, LayoutDashboard, Settings, LogOut, ShieldCheck } from "lucide-react";
+import {
+  Sun,
+  Moon,
+  ChevronDown,
+  LayoutDashboard,
+  Settings,
+  LogOut,
+  ShieldCheck,
+} from "lucide-react";
 
 export default function Header() {
-  const [menuOpen, setMenuOpen]       = useState(false);
-  const [scrolled, setScrolled]       = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [imageError, setImageError]   = useState<string | null>(null);
-  const { data: session, status }     = useSession();
-  const { toggleTheme, isDark }       = useTheme();
+  const [imageError, setImageError] = useState<string | null>(null);
+  const { data: session, status } = useSession();
+  const { toggleTheme, isDark } = useTheme();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -23,25 +31,45 @@ export default function Header() {
   return (
     <nav className={`navbar${scrolled ? " navbar-scrolled" : ""}`} id="navbar">
       <div className="nav-container">
-
         {/* Logo */}
         <Link href="/" className="nav-logo">
-          <span>Resume<span className="logo-ai">Builder</span></span>
+          <span>
+            Resume<span className="logo-ai">Builder</span>
+          </span>
         </Link>
 
         {/* Nav links */}
         <ul className={`nav-links${menuOpen ? " nav-links-open" : ""}`}>
-          <li><Link href="/#features" className="nav-link" onClick={() => setMenuOpen(false)}>Tính năng</Link></li>
-          <li><Link href="/#templates" className="nav-link" onClick={() => setMenuOpen(false)}>Templates</Link></li>
-          <li><Link href="/pricing" className="nav-link" onClick={() => setMenuOpen(false)}>Bảng giá</Link></li>
-          <li><a href="#"          className="nav-link" onClick={() => setMenuOpen(false)}>Blog</a></li>
+          <li>
+            <Link href="/#features" className="nav-link" onClick={() => setMenuOpen(false)}>
+              Tính năng
+            </Link>
+          </li>
+          <li>
+            <Link href="/#templates" className="nav-link" onClick={() => setMenuOpen(false)}>
+              Templates
+            </Link>
+          </li>
+          <li>
+            <Link href="/pricing" className="nav-link" onClick={() => setMenuOpen(false)}>
+              Bảng giá
+            </Link>
+          </li>
+          <li>
+            <a href="#" className="nav-link" onClick={() => setMenuOpen(false)}>
+              Blog
+            </a>
+          </li>
         </ul>
 
         {/* Right actions */}
         <div className="nav-actions">
-
           {/* Theme toggle */}
-          <button onClick={toggleTheme} className="theme-toggle-btn" title={isDark ? "Light Mode" : "Dark Mode"}>
+          <button
+            onClick={toggleTheme}
+            className="theme-toggle-btn"
+            title={isDark ? "Light Mode" : "Dark Mode"}
+          >
             <span className="theme-toggle-track">
               <span className="theme-toggle-thumb">
                 {isDark ? <Moon size={16} /> : <Sun size={16} />}
@@ -55,7 +83,6 @@ export default function Header() {
           ) : session?.user ? (
             <div className="nav-user-wrapper">
               <div className="nav-user-relative">
-
                 {/* Trigger */}
                 <div className="nav-user-trigger" onClick={() => setDropdownOpen(!dropdownOpen)}>
                   {session.user.image && imageError !== session.user.image ? (
@@ -91,18 +118,30 @@ export default function Header() {
                         <div className="nav-dropdown-email">{session.user.email}</div>
                       </div>
 
-                      <Link href="/dashboard" className="nav-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <Link
+                        href="/dashboard"
+                        className="nav-dropdown-item"
+                        onClick={() => setDropdownOpen(false)}
+                      >
                         <LayoutDashboard size={15} />
                         Dashboard
                       </Link>
 
-                      <Link href="/profile" className="nav-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <Link
+                        href="/profile"
+                        className="nav-dropdown-item"
+                        onClick={() => setDropdownOpen(false)}
+                      >
                         <Settings size={15} />
                         Cài đặt tài khoản
                       </Link>
 
                       {session.user.role === "ADMIN" && (
-                        <Link href="/admin" className="nav-dropdown-item nav-dropdown-item-admin" onClick={() => setDropdownOpen(false)}>
+                        <Link
+                          href="/admin"
+                          className="nav-dropdown-item nav-dropdown-item-admin"
+                          onClick={() => setDropdownOpen(false)}
+                        >
                           <ShieldCheck size={15} />
                           Admin Panel
                         </Link>
@@ -112,7 +151,10 @@ export default function Header() {
 
                       <button
                         className="nav-dropdown-item nav-dropdown-item-danger"
-                        onClick={() => { setDropdownOpen(false); signOut({ callbackUrl: "/" }); }}
+                        onClick={() => {
+                          setDropdownOpen(false);
+                          signOut({ callbackUrl: "/" });
+                        }}
                       >
                         <LogOut size={15} />
                         Đăng xuất
@@ -124,8 +166,12 @@ export default function Header() {
             </div>
           ) : (
             <>
-              <Link href="/auth" className="btn-nav-ghost" id="nav-login">Đăng nhập</Link>
-              <Link href="/auth" className="btn-nav-primary" id="nav-signup">Bắt đầu miễn phí</Link>
+              <Link href="/auth" className="btn-nav-ghost" id="nav-login">
+                Đăng nhập
+              </Link>
+              <Link href="/auth" className="btn-nav-primary" id="nav-signup">
+                Bắt đầu miễn phí
+              </Link>
             </>
           )}
         </div>
@@ -137,7 +183,9 @@ export default function Header() {
           aria-label="Toggle menu"
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          <span /><span /><span />
+          <span />
+          <span />
+          <span />
         </button>
       </div>
     </nav>

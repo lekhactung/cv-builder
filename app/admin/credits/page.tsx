@@ -20,11 +20,14 @@ export default function AdminCreditsPage() {
   const [selected, setSelected] = useState<UserResult | null>(null);
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
-  const [loading, setLoading] = useState(false);  
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<MsgType | null>(null);
 
   const searchUsers = useCallback(async (q: string) => {
-    if (!q.trim()) { setResults([]); return; }
+    if (!q.trim()) {
+      setResults([]);
+      return;
+    }
     setSearching(true);
     try {
       const res = await fetch(`/api/admin/users?q=${encodeURIComponent(q)}&page=1`);
@@ -42,7 +45,7 @@ export default function AdminCreditsPage() {
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setQuery(val);
-    
+
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
       searchUsers(val);
@@ -78,7 +81,7 @@ export default function AdminCreditsPage() {
       const data = await res.json();
       if (res.ok) {
         const newBalance = (selected.creditWallet?.balance ?? 0) + parsed;
-        setSelected((prev) => prev ? { ...prev, creditWallet: { balance: newBalance } } : prev);
+        setSelected((prev) => (prev ? { ...prev, creditWallet: { balance: newBalance } } : prev));
         setMessage({
           type: "success",
           text: `${parsed > 0 ? "+" : ""}${parsed} credits — số dư mới: ${newBalance}`,
@@ -102,7 +105,6 @@ export default function AdminCreditsPage() {
       <h1 className="admin-page-title">Credit Management</h1>
 
       <div className="credit-mgmt-grid">
-
         {/* ── Left: search + form ── */}
         <div className="admin-form-container credit-mgmt-panel">
           <h2 className="admin-form-title">Nạp / Trừ Credits</h2>
@@ -211,25 +213,17 @@ export default function AdminCreditsPage() {
 
             {message && (
               <div className={`credit-message credit-message--${message.type}`}>
-                {message.type === "success"
-                  ? <CheckCircle size={15} />
-                  : <XCircle size={15} />
-                }
+                {message.type === "success" ? <CheckCircle size={15} /> : <XCircle size={15} />}
                 {message.text}
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading || !selected}
-              className="admin-submit-btn"
-            >
+            <button type="submit" disabled={loading || !selected} className="admin-submit-btn">
               {loading
                 ? "Đang xử lý..."
                 : amtNum < 0
                   ? `Trừ ${Math.abs(amtNum)} credits`
-                  : `Nạp ${amtNum || "?"} credits`
-              }
+                  : `Nạp ${amtNum || "?"} credits`}
             </button>
           </form>
         </div>
@@ -237,22 +231,23 @@ export default function AdminCreditsPage() {
         {/* ── Right: quick presets ── */}
         <div className="admin-form-container credit-mgmt-panel">
           <h2 className="admin-form-title">Nạp nhanh</h2>
-          <p className="credit-preset-hint">
-            Chọn user trước, rồi bấm preset để điền nhanh.
-          </p>
+          <p className="credit-preset-hint">Chọn user trước, rồi bấm preset để điền nhanh.</p>
           <div className="credit-preset-grid">
             {[
-              { label: "+10 credits",  value: 10,   desc: "Thưởng nhỏ" },
-              { label: "+50 credits",  value: 50,   desc: "Bù lỗi hệ thống" },
-              { label: "+100 credits", value: 100,  desc: "Bonus tháng" },
-              { label: "+500 credits", value: 500,  desc: "Gói premium trial" },
-              { label: "−10 credits",  value: -10,  desc: "Hoàn tác nạp sai" },
-              { label: "−50 credits",  value: -50,  desc: "Điều chỉnh" },
+              { label: "+10 credits", value: 10, desc: "Thưởng nhỏ" },
+              { label: "+50 credits", value: 50, desc: "Bù lỗi hệ thống" },
+              { label: "+100 credits", value: 100, desc: "Bonus tháng" },
+              { label: "+500 credits", value: 500, desc: "Gói premium trial" },
+              { label: "−10 credits", value: -10, desc: "Hoàn tác nạp sai" },
+              { label: "−50 credits", value: -50, desc: "Điều chỉnh" },
             ].map((p) => (
               <button
                 key={p.value}
                 type="button"
-                onClick={() => { setAmount(String(p.value)); setDescription(p.desc); }}
+                onClick={() => {
+                  setAmount(String(p.value));
+                  setDescription(p.desc);
+                }}
                 className={`credit-preset-btn ${p.value > 0 ? "credit-preset-btn--add" : "credit-preset-btn--sub"}`}
               >
                 <span className="credit-preset-label">{p.label}</span>
@@ -261,7 +256,6 @@ export default function AdminCreditsPage() {
             ))}
           </div>
         </div>
-
       </div>
     </div>
   );
