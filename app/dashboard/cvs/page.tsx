@@ -47,6 +47,7 @@ export default async function CvsPage() {
                 title={cv.title}
                 updatedAt={cv.updatedAt}
                 template={cv.template}
+                data={cv.data}
               />
             ))}
           </div>
