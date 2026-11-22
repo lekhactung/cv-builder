@@ -22,9 +22,23 @@ export const HeaderBlockData = z.object({
   website: z.string().default(""),
   linkedin: z.string().default(""),
   avatarUrl: z.string().default(""),
+  avatarPosition: z
+    .object({
+      x: z.number().min(-100000).max(100000),
+      y: z.number().min(-100000).max(100000),
+    })
+    .optional(),
 });
 export const TextBlockData = z.object({
   content: z.string().default(""),
+  format: z
+    .object({
+      fontSize: z.number().min(8).max(72),
+      bold: z.boolean(),
+      color: z.string().regex(/^#[0-9a-f]{6}$/i),
+      align: z.enum(["left", "center", "right"]),
+    })
+    .optional(),
 });
 export const TimelineItemSchema = z.object({
   id: z.string().default(() => crypto.randomUUID()),
@@ -70,6 +84,22 @@ const BaseBlock = z.object({
   label: z.string().default(""),
   icon: z.string().default(""),
   visible: z.boolean().default(true),
+  frame: z
+    .object({
+      x: z.number().min(0).max(794),
+      y: z.number().min(0).max(1123),
+      width: z.number().min(80).max(794),
+      height: z.number().min(32).max(1123),
+    })
+    // Allow floating-point rounding from zoomed dragging at the page edge.
+    .refine(
+      (frame) =>
+        frame.x + frame.width <= 794 + 0.000001 && frame.y + frame.height <= 1123 + 0.000001,
+      {
+        message: "Hộp văn bản phải nằm trong trang A4",
+      },
+    )
+    .optional(),
 });
 
 export const BlockSchema = z.discriminatedUnion("type", [
@@ -109,7 +139,7 @@ export type Column = z.infer<typeof ColumnSchema>;
 
 export const CvDocumentSchema = z.object({
   layout: z
-    .enum(["single", "two-column", "sidebar-left", "sidebar-right", "harvard"])
+    .enum(["single", "two-column", "sidebar-left", "sidebar-right", "harvard", "freeform"])
     .default("single"),
   theme: z
     .object({
