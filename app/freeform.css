@@ -1,0 +1,392 @@
+.cv-freeform-page {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 210 / 297;
+  flex: none;
+  background: white;
+  color: #334155;
+  isolation: isolate;
+}
+.cv-freeform-margin,
+.cv-freeform-group {
+  position: absolute;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+.cv-freeform-margin {
+  border: 1px dashed #cbd5e1;
+}
+.cv-freeform-group {
+  outline: 1px dashed #6366f1;
+  outline-offset: 5px;
+  z-index: 3;
+}
+.cv-freeform-guide {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+}
+.cv-freeform-guide-x {
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid #d946ef;
+}
+.cv-freeform-guide-y {
+  left: 0;
+  right: 0;
+  border-top: 1px solid #d946ef;
+}
+.cv-freeform-box {
+  position: absolute;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+.cv-freeform-text,
+.cv-freeform-edit {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-family: inherit;
+  line-height: inherit;
+  letter-spacing: normal;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.cv-freeform-interactive {
+  cursor: move;
+  touch-action: none;
+  user-select: none;
+  outline: 1px solid transparent;
+}
+.cv-freeform-interactive:hover {
+  outline-color: #c7d2fe;
+}
+.cv-freeform-interactive.is-selected,
+.cv-freeform-interactive:focus-visible {
+  outline: 2px solid #6366f1;
+}
+.cv-freeform-interactive.is-editing {
+  cursor: text;
+}
+.cv-freeform-interactive.is-editing .cv-freeform-text {
+  visibility: hidden;
+}
+.cv-freeform-edit {
+  position: absolute;
+  inset: 0;
+  resize: none;
+  outline: none;
+  background: #fff;
+  user-select: text;
+  touch-action: auto;
+  overflow: auto;
+  border-radius: 0;
+}
+.cv-freeform-grip,
+.cv-freeform-resize {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #6366f1;
+  color: #fff;
+  background: #4f46e5;
+  padding: 0;
+  border-radius: 5px;
+  touch-action: none;
+  user-select: none;
+}
+.cv-freeform-grip {
+  left: 0;
+  bottom: 100%;
+  gap: 4px;
+  padding: 4px 8px;
+  min-height: 28px;
+  font-size: 11px;
+  cursor: grab;
+}
+.cv-freeform-resize {
+  right: -8px;
+  bottom: -8px;
+  width: 24px;
+  height: 24px;
+  cursor: nwse-resize;
+}
+.cv-freeform-overflow {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  max-width: 100%;
+  margin-top: 6px;
+  padding: 4px 6px;
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+  font-size: 11px;
+  line-height: 1.4;
+  pointer-events: none;
+}
+.cv-freeform-controls {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+.cv-freeform-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.cv-freeform-controls button:hover,
+.cv-freeform-controls button[aria-pressed="true"] {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: var(--primary-dim);
+}
+.cv-freeform-add,
+.cv-freeform-fields {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: end;
+}
+.cv-freeform-add > *,
+.cv-freeform-fields > * {
+  flex: 1;
+  min-width: 0;
+}
+.cv-freeform-add button {
+  color: var(--primary);
+  font-weight: 600;
+}
+.cv-freeform-properties {
+  margin: 16px 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-surface-2);
+}
+.cv-freeform-properties > strong {
+  font-size: 14px;
+}
+.cv-freeform-content-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.cv-freeform-content-label textarea {
+  width: 100%;
+  min-height: 110px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+}
+.cv-freeform-properties > p,
+.cv-freeform-help {
+  margin: 8px 0 16px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.cv-freeform-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.cv-freeform-fields input,
+.cv-freeform-fields select {
+  width: 100%;
+  min-width: 0;
+  height: 38px;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+.cv-freeform-fields input[type="color"] {
+  padding: 4px;
+}
+.cv-freeform-controls h3 {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0 12px;
+  font-size: 13px;
+}
+.cv-freeform-controls h3 span {
+  color: var(--text-secondary);
+}
+.cv-freeform-layers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cv-freeform-layers > div {
+  display: flex;
+  gap: 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px;
+}
+.cv-freeform-layers > div[data-selected="true"] {
+  border-color: var(--primary);
+  background: var(--primary-dim);
+}
+.cv-freeform-layers button {
+  border: 0;
+  background: transparent;
+}
+.cv-freeform-layers .cv-freeform-layer-select {
+  flex: 1;
+  min-width: 0;
+  display: block;
+  text-align: left;
+}
+.cv-freeform-layer-select strong,
+.cv-freeform-layer-select span {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.cv-freeform-layer-select strong {
+  font-size: 12px;
+}
+.cv-freeform-layer-select span {
+  margin-top: 5px;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+.cv-freeform-alignment {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  margin: 14px 0;
+  background: var(--bg-surface-2);
+}
+.cv-freeform-selection-count {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.cv-freeform-selection-count > button {
+  min-height: 30px;
+  padding: 4px 8px;
+  font-size: 11px;
+}
+.cv-freeform-align-target {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.cv-freeform-align-target select {
+  min-width: 0;
+  width: 100%;
+  min-height: 38px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+.cv-freeform-align-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.cv-freeform-align-buttons > button {
+  padding: 8px 4px;
+  font-size: 11px;
+}
+.cv-freeform-controls button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.cv-freeform-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-block: 6px;
+  font-size: 12px;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.cv-freeform-check input,
+.cv-freeform-layer-check {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: var(--primary);
+}
+.cv-freeform-layer-check {
+  align-self: center;
+  margin-left: 6px;
+  cursor: pointer;
+}
+.cv-freeform-alignment .cv-freeform-help {
+  margin: 8px 0 12px;
+}
+.cv-freeform-alignment-status {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.cv-freeform-alignment-status:empty {
+  margin: 0;
+}
+@media print {
+  .cv-freeform-margin,
+  .cv-freeform-group,
+  .cv-freeform-guide {
+    display: none !important;
+  }
+  .cv-freeform-page {
+    break-inside: avoid;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .cv-freeform-interactive,
+  .cv-freeform-interactive:hover,
+  .cv-freeform-interactive.is-selected,
+  .cv-freeform-interactive:focus-visible {
+    outline: none !important;
+  }
+  .cv-freeform-grip,
+  .cv-freeform-resize,
+  .cv-freeform-overflow,
+  .cv-freeform-edit {
+    display: none !important;
+  }
+  .cv-freeform-interactive.is-editing .cv-freeform-text {
+    visibility: visible;
+  }
+}
