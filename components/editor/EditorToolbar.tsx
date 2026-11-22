@@ -4,33 +4,30 @@ import {
   ArrowLeft,
   Undo2,
   Redo2,
-  LayoutTemplate,
   Download,
   CheckCircle2,
   Loader2,
-  Save,
+  Cloud,
   AlertCircle,
 } from "lucide-react";
+import styles from "./Editor.module.css";
 
 interface Props {
   title: string;
-  onTitleChange: (t: string) => void;
-  onSave: () => void;
+  onTitleChange: (title: string) => void;
   saving: boolean;
   saved: boolean;
   saveError?: string | null;
   lastSavedAt?: Date | null;
-  cvId: string;
   onExportPdf: () => void;
   isExporting: boolean;
   onUndo: () => void;
   onRedo: () => void;
   canUndo: boolean;
   canRedo: boolean;
-  onShowTemplates: () => void;
 }
 
-export default function EditorToolBar({
+export default function EditorToolbar({
   title,
   onTitleChange,
   saving,
@@ -43,106 +40,85 @@ export default function EditorToolBar({
   onRedo,
   canUndo,
   canRedo,
-  onShowTemplates,
-  cvId,
 }: Props) {
+  const status = saving
+    ? "Đang lưu…"
+    : saveError
+      ? "Không thể lưu CV"
+      : saved
+        ? "Đã lưu tự động"
+        : "Đang chờ lưu…";
   return (
-    <header className="print:hidden flex items-center justify-between px-4 h-14 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-10 shrink-0">
-      {/* ── Left ── */}
-      <div className="flex items-center gap-2 flex-1">
-        <Link
-          href="/dashboard"
-          className="p-2 text-slate-500 hover:text-violet-600 hover:bg-violet-50 rounded-md transition-colors"
-          title="Về Dashboard"
-        >
-          <ArrowLeft size={18} />
-        </Link>
-
-        <div className="w-px h-5 bg-slate-200 mx-1" />
-
-        <div className="flex items-center gap-1">
-          <button
-            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
-            onClick={onUndo}
-            disabled={!canUndo}
-            title="Hoàn tác (Ctrl+Z)"
-          >
-            <Undo2 size={16} />
-          </button>
-          <button
-            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
-            onClick={onRedo}
-            disabled={!canRedo}
-            title="Làm lại (Ctrl+Shift+Z)"
-          >
-            <Redo2 size={16} />
-          </button>
-        </div>
-
-        <div className="w-px h-5 bg-slate-200 mx-1" />
-        <button
-          className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-violet-600 hover:bg-violet-50 border border-slate-200 hover:border-violet-200 rounded-md transition-all"
-          onClick={onShowTemplates}
-          title="Đổi template"
-        >
-          <LayoutTemplate size={16} />
-          Template
-        </button>
-      </div>
-
-      {/* ── Center: Title ── */}
-      <div className="flex items-center justify-center flex-1">
+    <header className={styles.toolbar}>
+      <Link
+        href="/dashboard"
+        className={styles.iconButton}
+        aria-label="Về danh sách CV"
+        title="Về danh sách CV"
+      >
+        <ArrowLeft size={20} />
+      </Link>
+      <div className={styles.documentInfo}>
         <input
-          className="bg-transparent border border-transparent hover:border-slate-200 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800/50 focus:border-violet-500 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/30 rounded-md px-3 py-1.5 text-sm font-semibold text-center text-slate-800 dark:text-slate-200 transition-all outline-none w-64"
+          className={styles.titleInput}
+          aria-label="Tên CV"
           value={title}
-          onChange={(e) => onTitleChange(e.target.value)}
-          placeholder="Tên CV..."
+          onChange={(event) => onTitleChange(event.target.value)}
+          placeholder="Đặt tên CV…"
           maxLength={80}
         />
-      </div>
-
-      {/* ── Right: Status + Export ── */}
-      <div className="flex items-center justify-end gap-4 flex-1">
-        <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
-          {saving ? (
-            <>
-              <Loader2 size={14} className="animate-spin text-violet-500" />
-              Đang lưu…
-            </>
-          ) : saveError ? (
-            <>
-              <AlertCircle size={14} className="text-red-500" />
-              <span className="text-red-600" title={saveError}>
-                Lỗi lưu
-              </span>
-            </>
-          ) : saved ? (
-            <>
-              <CheckCircle2 size={14} className="text-emerald-500" />
-              <span className="text-emerald-600">
-                {lastSavedAt
-                  ? `Đã lưu lúc ${lastSavedAt.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}`
-                  : "Đã lưu"}
-              </span>
-            </>
-          ) : (
-            <>
-              <Save size={14} />
-              Chưa lưu
-            </>
-          )}
-        </div>
-
-        <button
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 active:bg-violet-800 rounded-md shadow-sm hover:shadow transition-all disabled:opacity-70 disabled:cursor-not-allowed"
-          onClick={onExportPdf}
-          disabled={isExporting}
-          title="Xuất PDF"
+        <span
+          className={styles.saveStatus}
+          data-error={Boolean(saveError)}
+          role="status"
+          title={
+            saveError ||
+            (lastSavedAt ? `Lưu gần nhất: ${lastSavedAt.toLocaleTimeString("vi-VN")}` : status)
+          }
         >
-          {isExporting ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
-          {isExporting ? "Đang xuất…" : "Xuất PDF"}
+          {saving ? (
+            <Loader2 size={13} className="animate-spin" />
+          ) : saveError ? (
+            <AlertCircle size={13} />
+          ) : saved ? (
+            <CheckCircle2 size={13} />
+          ) : (
+            <Cloud size={13} />
+          )}
+          {status}
+        </span>
+      </div>
+      <div className={styles.history} aria-label="Lịch sử chỉnh sửa">
+        <button
+          type="button"
+          className={styles.iconButton}
+          onClick={onUndo}
+          disabled={!canUndo}
+          aria-label="Hoàn tác"
+          title="Hoàn tác (Ctrl+Z)"
+        >
+          <Undo2 size={18} />
+        </button>
+        <button
+          type="button"
+          className={styles.iconButton}
+          onClick={onRedo}
+          disabled={!canRedo}
+          aria-label="Làm lại"
+          title="Làm lại (Ctrl+Shift+Z)"
+        >
+          <Redo2 size={18} />
         </button>
       </div>
+      <button
+        type="button"
+        className={styles.exportButton}
+        onClick={onExportPdf}
+        disabled={isExporting}
+      >
+        {isExporting ? <Loader2 size={17} className="animate-spin" /> : <Download size={17} />}
+        {isExporting ? "Đang chuẩn bị…" : "Xuất PDF"}
+      </button>
     </header>
   );
 }
