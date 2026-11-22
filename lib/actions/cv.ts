@@ -18,7 +18,7 @@ export async function deleteCvAction(id: string) {
     if (deleted.count === 0) {
       return { success: false, error: "CV không tồn tại hoặc không có quyền" };
     }
-    revalidatePath("/dashboard");
+    revalidatePath("/dashboard", "layout");
     return { success: true };
   } catch (error) {
     console.error("Lỗi khi xóa CV:", error);
@@ -84,6 +84,7 @@ export async function createCvAction(
     },
   });
 
+  revalidatePath("/dashboard", "layout");
   return cv.id;
 }
 
@@ -107,6 +108,7 @@ export async function updateCvAction(id: string, data: unknown, title: string, t
     },
   });
 
+  revalidatePath("/dashboard", "layout");
   return { success: true };
 }
 
