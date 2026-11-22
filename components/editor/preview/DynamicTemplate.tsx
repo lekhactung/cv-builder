@@ -1,11 +1,13 @@
 import { CvDocument, Block } from "@/lib/schemas/block.schema";
 import React from "react";
+import FreeformPage from "../freeform/FreeformPage";
 
 interface Props {
   doc: CvDocument;
 }
 
 export default function DynamicTemplate({ doc }: Props) {
+  if (doc.layout === "freeform") return <FreeformPage doc={doc} />;
   const { columns, theme } = doc;
 
   const cssVars = {
@@ -59,7 +61,24 @@ function BlockRenderer({ block, theme }: { block: Block; theme: CvDocument["them
 function HeaderRenderer({ data, theme }: any) {
   return (
     <div className="cv-header">
-      {data.avatarUrl && <img src={data.avatarUrl} className="cv-avatar" alt="avatar" />}
+      {data.avatarUrl && (
+        <div className="cv-photo">
+          <div className="cv-photo-slot">
+            <img
+              src={data.avatarUrl}
+              className="cv-avatar cv-photo-positioned"
+              alt="Ảnh chân dung trên CV"
+              style={
+                data.avatarPosition
+                  ? {
+                      transform: `translate(${data.avatarPosition.x}px, ${data.avatarPosition.y}px)`,
+                    }
+                  : undefined
+              }
+            />
+          </div>
+        </div>
+      )}
       <div>
         <h1 className="cv-name">{data.fullName || "Họ và Tên"}</h1>
         <p className="cv-jobtitle">{data.jobTitle || "Chức danh"}</p>
