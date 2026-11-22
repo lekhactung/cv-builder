@@ -36,13 +36,14 @@ export const entitlementService = {
   },
 
   async canUserAccessTemplate(userId: string, templateId: string): Promise<boolean> {
+    if (templateId === "freeform") return true;
     const plan = await this.getActivePlan(userId);
     return plan?.templates.some((t) => t.templateId === templateId) ?? false;
   },
 
   async getAllowedTemplateIds(userId: string): Promise<string[]> {
     const plan = await this.getActivePlan(userId);
-    return plan?.templates.map((t) => t.templateId) ?? [];
+    return [...new Set([...(plan?.templates.map((t) => t.templateId) ?? []), "freeform"])];
   },
 
   async canCreateMoreCVs(userId: string): Promise<boolean> {
