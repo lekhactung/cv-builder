@@ -14,102 +14,75 @@ import {
   EyeOff,
   Copy,
   Trash2,
-  GripVertical,
 } from "lucide-react";
+import styles from "./Editor.module.css";
 
 interface Props {
   block: Block;
   columnId: string;
   onClick: () => void;
 }
-
-const TYPE_STYLE: Record<string, { accent: string; icon: React.ReactNode }> = {
-  header: { accent: "border-indigo-500", icon: <User size={16} className="text-indigo-500" /> },
-  text: { accent: "border-blue-500", icon: <AlignLeft size={16} className="text-blue-500" /> },
-  timeline: {
-    accent: "border-emerald-500",
-    icon: <CalendarRange size={16} className="text-emerald-500" />,
-  },
-  skills: { accent: "border-amber-500", icon: <Zap size={16} className="text-amber-500" /> },
-  tags: { accent: "border-cyan-500", icon: <Tags size={16} className="text-cyan-500" /> },
-  links: { accent: "border-rose-500", icon: <LinkIcon size={16} className="text-rose-500" /> },
-  divider: { accent: "border-slate-500", icon: <Minus size={16} className="text-slate-500" /> },
-  spacer: {
-    accent: "border-slate-400",
-    icon: <MoveVertical size={16} className="text-slate-400" />,
-  },
+const TYPES = {
+  header: { name: "Thông tin cá nhân", icon: User },
+  text: { name: "Đoạn văn bản", icon: AlignLeft },
+  timeline: { name: "Kinh nghiệm / Học vấn", icon: CalendarRange },
+  skills: { name: "Kỹ năng", icon: Zap },
+  tags: { name: "Danh sách kỹ năng", icon: Tags },
+  links: { name: "Liên kết", icon: LinkIcon },
+  divider: { name: "Đường phân cách", icon: Minus },
+  spacer: { name: "Khoảng cách", icon: MoveVertical },
 };
 
 export default function BlockCard({ block, columnId, onClick }: Props) {
   const { selectedBlockId, removeBlock, toggleBlockVisible, duplicateBlock } = useEditorStore();
-  const isSelected = selectedBlockId === block.id;
-  const cfg = TYPE_STYLE[block.type] ?? {
-    accent: "border-slate-400",
-    icon: <div className="w-4 h-4 bg-slate-200 rounded-sm" />,
-  };
-
+  const { name, icon: Icon } = TYPES[block.type];
+  const label = block.label || name;
   return (
     <div
-      className={`group flex items-center justify-between p-3 mb-2 rounded-lg border transition-all cursor-pointer bg-white relative overflow-hidden ${
-        isSelected
-          ? "border-indigo-500 shadow-sm ring-1 ring-indigo-500"
-          : "border-slate-200 hover:border-slate-300 hover:shadow-sm"
-      } ${!block.visible ? "opacity-60 grayscale-[0.5]" : ""}`}
-      onClick={onClick}
+      className={styles.blockRow}
+      data-selected={selectedBlockId === block.id}
+      data-hidden={!block.visible}
     >
-      {/* Accent left bar */}
-      <div className={`absolute left-0 top-0 bottom-0 w-1 ${cfg.accent} border-l-4`} />
-
-      <div className="flex items-center gap-2 pl-2 flex-1 min-w-0">
-        <GripVertical
-          size={15}
-          className="text-slate-300 cursor-grab shrink-0 opacity-50 group-hover:opacity-100 transition-opacity"
-        />
-        <div className="flex items-center justify-center w-8 h-8 rounded-md bg-slate-50 border border-slate-100 shrink-0">
-          {cfg.icon}
-        </div>
-
-        <div className="flex flex-col min-w-0">
-          <span className="text-sm font-semibold text-slate-800 truncate">
-            {block.label || block.type}
-          </span>
-          <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
-            {block.type}
-          </span>
-        </div>
-      </div>
-
-      {/* Actions (visible on hover or always on touch devices) */}
-      <div className="flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
+      <button
+        type="button"
+        className={styles.blockSelect}
+        onClick={onClick}
+        aria-pressed={selectedBlockId === block.id}
+        title={`Chỉnh sửa ${label}`}
+      >
+        <span className={styles.blockIcon}>
+          <Icon size={16} />
+        </span>
+        <span className={styles.blockText}>
+          <strong>{label}</strong>
+          <small>{block.visible ? name : "Đang ẩn trên CV"}</small>
+        </span>
+      </button>
+      <div className={styles.blockActions}>
         <button
-          className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleBlockVisible(columnId, block.id);
-          }}
-          title={block.visible ? "Ẩn" : "Hiện"}
+          type="button"
+          onClick={() => toggleBlockVisible(columnId, block.id)}
+          title={block.visible ? "Ẩn mục" : "Hiện mục"}
+          aria-label={`${block.visible ? "Ẩn" : "Hiện"} ${label}`}
         >
           {block.visible ? <Eye size={14} /> : <EyeOff size={14} />}
         </button>
         <button
-          className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
-          onClick={(e) => {
-            e.stopPropagation();
-            duplicateBlock(columnId, block.id);
-          }}
-          title="Nhân đôi"
+          type="button"
+          onClick={() => duplicateBlock(columnId, block.id)}
+          title="Nhân bản mục"
+          aria-label={`Nhân bản ${label}`}
         >
           <Copy size={14} />
         </button>
         <button
-          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-          onClick={(e) => {
-            e.stopPropagation();
-            if (window.confirm("Bạn có chắc chắn muốn xóa block này?")) {
+          type="button"
+          title="Xóa mục"
+          aria-label={`Xóa ${label}`}
+          onClick={() => {
+            if (window.confirm(`Xóa mục “${label}” khỏi CV? Bạn có thể hoàn tác sau khi xóa.`))
               removeBlock(columnId, block.id);
-            }
           }}
-          title="Xóa"
         >
           <Trash2 size={14} />
         </button>
