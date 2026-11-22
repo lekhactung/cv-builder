@@ -5,14 +5,16 @@ import { deleteCvAction } from "@/lib/actions/cv";
 import { Trash2, Download } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import { usePdfExport } from "@/lib/hooks/usePdfExport";
+import CvThumbnail from "@/components/CvThumbnail";
 
 interface CvCardProps {
   id: string;
   title: string;
   updatedAt: Date;
   template?: string;
+  data: unknown;
 }
-export default function CvCard({ id, title, updatedAt, template = "Modern" }: CvCardProps) {
+export default function CvCard({ id, title, updatedAt, template = "Modern", data }: CvCardProps) {
   const [isPending, startTransition] = useTransition();
   const [isFetchingData, setIsFetchingData] = useState(false);
   const { exportPdf, isExporting } = usePdfExport();
@@ -51,15 +53,9 @@ export default function CvCard({ id, title, updatedAt, template = "Modern" }: Cv
   return (
     <div className="db-cv-card">
       {/* Preview thumbnail */}
-      <div className="db-cv-thumbnail">
-        <div className="db-cv-thumbnail-inner">
-          <div className="db-cv-mock-line" style={{ width: "60%" }} />
-          <div className="db-cv-mock-line" style={{ width: "40%" }} />
-          <div className="db-cv-mock-line" style={{ width: "80%", marginTop: "0.5rem" }} />
-          <div className="db-cv-mock-line" style={{ width: "70%" }} />
-          <div className="db-cv-mock-line" style={{ width: "50%" }} />
-        </div>
-      </div>
+      <Link href={`/editor/${id}`} className="db-cv-thumbnail" aria-label={`Chỉnh sửa ${title}`}>
+        <CvThumbnail data={data} label={`Xem trước ${title}`} />
+      </Link>
       {/* Info */}
       <div className="db-cv-info">
         <h3 className="db-cv-title">{title}</h3>
