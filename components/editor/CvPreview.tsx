@@ -1,50 +1,47 @@
-// components/editor/CvPreview.tsx
 "use client";
 import { useEffect, useState, useRef } from "react";
 import EditableTemplate from "./preview/EditableTemplate";
-import { useAutoFit } from "@/lib/hooks/useAutoFit";
+import styles from "./Editor.module.css";
 
-export default function CvPreview() {
-  const autoFitRef = useAutoFit(true);
+export default function CvPreview({ zoom = "fit" }: { zoom?: string }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
+  const pageRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ available: 794, width: 794, height: 1123 });
 
   useEffect(() => {
-    const handleResize = () => {
-      if (!wrapperRef.current) return;
-      // 210mm in pixels is approx 794px. We add a little padding.
-      const A4_WIDTH = 794;
-      const containerWidth = wrapperRef.current.clientWidth - 32; // 16px padding each side
-
-      if (containerWidth < A4_WIDTH) {
-        setScale(containerWidth / A4_WIDTH);
-      } else {
-        setScale(1);
-      }
+    const wrapper = wrapperRef.current;
+    const page = pageRef.current;
+    if (!wrapper || !page) return;
+    const measure = () => {
+      if (!wrapper.clientWidth || !page.offsetWidth) return;
+      setSize({
+        available: wrapper.clientWidth,
+        width: page.offsetWidth,
+        height: page.offsetHeight,
+      });
     };
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
+    const observer = new ResizeObserver(measure);
+    observer.observe(wrapper);
+    observer.observe(page);
+    measure();
+    return () => observer.disconnect();
   }, []);
 
+  const scale = zoom === "fit" ? Math.min(1, size.available / size.width) : Number(zoom);
+
   return (
-    <div
-      ref={wrapperRef}
-      className="editor-preview-wrapper flex justify-center w-full print:block print:w-[210mm] overflow-x-hidden"
-    >
+    <div ref={wrapperRef} className={`${styles.paperWrapper} cv-editor-paper-wrapper`}>
       <div
-        className="cv-a4-page flex flex-col bg-white shadow-2xl print:shadow-none shrink-0 border border-slate-200 print:border-none print:m-0"
-        style={{
-          width: "210mm",
-          minHeight: "297mm",
-          transform: `scale(${scale})`,
-          transformOrigin: "top center",
-          marginBottom: scale < 1 ? `-${(1 - scale) * 1122}px` : "0", // 297mm approx 1122px
-        }}
-        ref={autoFitRef}
+        className={`${styles.paperStage} cv-editor-paper-stage`}
+        style={{ width: size.width * scale, height: size.height * scale }}
       >
-        <EditableTemplate />
+        <div
+          ref={pageRef}
+          className={`${styles.paper} cv-a4-page`}
+          style={{ transform: `scale(${scale})` }}
+        >
+          <EditableTemplate />
+        </div>
       </div>
     </div>
   );
