@@ -3,11 +3,13 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useEditorStore } from "@/lib/stores/editorStore";
 import { CvDocument } from "@/lib/schemas/block.schema";
 import { updateCvAction, createCvAction } from "@/lib/actions/cv";
-import { Layers } from "lucide-react";
+import { Layers, LayoutTemplate, MousePointer2, FileText } from "lucide-react";
 import EditorToolbar from "./EditorToolbar";
 import BlockCanvas from "./BlockCanvas";
 import CvPreview from "./CvPreview";
 import TemplatePicker from "./TemplatePicker";
+import FreeformControls from "./freeform/FreeformControls";
+import styles from "./Editor.module.css";
 
 interface Props {
   cvId: string;
@@ -46,14 +48,14 @@ export default function EditorShell({
   const [showTemplates, setShowTemplates] = useState(cvId === "new");
   const [currentCvId, setCurrentCvId] = useState(cvId);
   const [isExporting, setIsExporting] = useState(false);
+  const [mobilePanel, setMobilePanel] = useState<"content" | "preview">("preview");
+  const [zoom, setZoom] = useState("fit");
+  const [exportError, setExportError] = useState<string | null>(null);
   const autoSaveTime = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const loadedCvId = useRef<string | null>(null);
 
-  const templateNameRef = useRef(templateName);
   const templateIdRef = useRef(templateId);
   const currentCvIdRef = useRef(currentCvId);
-  useEffect(() => {
-    templateNameRef.current = templateName;
-  }, [templateName]);
   useEffect(() => {
     templateIdRef.current = templateId;
   }, [templateId]);
@@ -62,8 +64,11 @@ export default function EditorShell({
   }, [currentCvId]);
 
   useEffect(() => {
+    // Server-action revalidation must not replace edits or clear undo history for this CV.
+    if (loadedCvId.current === cvId) return;
     loadDocument(cvId, initialTitle, initialTemplateName, initialTemplateId, initialDocument);
-  }, [cvId]);
+    loadedCvId.current = cvId;
+  }, [cvId, initialTitle, initialTemplateName, initialTemplateId, initialDocument, loadDocument]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -85,18 +90,23 @@ export default function EditorShell({
       useEditorStore.getState().setSaveError(null);
 
       const latestCvId = currentCvIdRef.current;
-      const latestTemplateName = templateNameRef.current;
       const latestTemplateId = templateIdRef.current;
       try {
         if (latestCvId === "new") {
-          const newId = await createCvAction(latestTemplateId, document as any, title);
+          const newId = await createCvAction(latestTemplateId, document, title);
           setCurrentCvId(newId);
           currentCvIdRef.current = newId;
           window.history.replaceState(null, "", `/editor/${newId}`);
         } else {
-          await updateCvAction(latestCvId, document as any, title, latestTemplateName);
+          await updateCvAction(latestCvId, document, title, latestTemplateId);
         }
-        setSaved(true);
+        const latest = useEditorStore.getState();
+        if (
+          latest.document === document &&
+          latest.title === title &&
+          latest.templateId === latestTemplateId
+        )
+          setSaved(true);
         useEditorStore.getState().setLastSavedAt(new Date());
       } catch (err) {
         console.error("Autosave failed:", err);
@@ -105,74 +115,172 @@ export default function EditorShell({
         setSaving(false);
       }
     }, 1500);
-  }, [document, title, saved]);
+    return () => clearTimeout(autoSaveTime.current);
+  }, [document, title, saved, setSaved, setSaving]);
 
   const handleExportPdf = useCallback(async () => {
+    setExportError(null);
     setIsExporting(true);
-    await new Promise((r) => setTimeout(r, 80));
-    window.print();
-    setIsExporting(false);
+    try {
+      // Commit the active contenteditable before preparing the print layout.
+      if (window.document.activeElement instanceof HTMLElement)
+        window.document.activeElement.blur();
+      await window.document.fonts.ready;
+      await Promise.all(
+        Array.from(window.document.querySelectorAll<HTMLImageElement>(".cv-a4-page img")).map(
+          (image) => image.decode().catch(() => undefined),
+        ),
+      );
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      );
+      window.print();
+    } catch {
+      setExportError("Không thể mở cửa sổ xuất PDF. Vui lòng thử lại.");
+    } finally {
+      setIsExporting(false);
+    }
   }, []);
 
+  const handleSelectBlock = (blockId: string) => {
+    setMobilePanel("preview");
+    requestAnimationFrame(() => {
+      const block = window.document.getElementById(`cv-block-${blockId}`);
+      block?.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (document.layout === "freeform") block?.focus({ preventScroll: true });
+      else
+        block
+          ?.querySelector<HTMLElement>('[contenteditable="true"]')
+          ?.focus({ preventScroll: true });
+    });
+  };
+
   return (
-    <div className="flex flex-col h-screen print:h-auto print:block bg-slate-50 dark:bg-slate-900 overflow-hidden print:overflow-visible font-sans">
+    <div className={`${styles.shell} cv-editor-shell`} data-mobile-panel={mobilePanel}>
       <EditorToolbar
         title={title}
         onTitleChange={setTitle}
-        onSave={() => {
-          clearTimeout(autoSaveTime.current);
-          useEditorStore.getState().setSaved(false);
-        }}
         saving={saving}
         saved={saved}
         saveError={saveError}
         lastSavedAt={lastSavedAt}
-        cvId={currentCvId}
         onExportPdf={handleExportPdf}
         isExporting={isExporting}
         onUndo={undo}
         onRedo={redo}
         canUndo={canUndo()}
         canRedo={canRedo()}
-        onShowTemplates={() => setShowTemplates(true)}
       />
-      <div className="flex flex-1 overflow-hidden print:overflow-visible print:block">
+      <nav className={styles.mobileTabs} aria-label="Chế độ chỉnh sửa">
+        <button
+          type="button"
+          aria-pressed={mobilePanel === "content"}
+          onClick={() => setMobilePanel("content")}
+        >
+          <Layers size={16} />
+          Các mục CV
+        </button>
+        <button
+          type="button"
+          aria-pressed={mobilePanel === "preview"}
+          onClick={() => setMobilePanel("preview")}
+        >
+          <FileText size={16} />
+          Chỉnh sửa CV
+        </button>
+      </nav>
+      <div className={`${styles.workspace} cv-editor-workspace`}>
         {/* ── Left panel: block structure ── */}
-        <aside className="print:hidden w-[300px] flex-shrink-0 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col z-10 shadow-sm">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
-            <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-              <Layers size={16} className="text-indigo-500" />
-              Cấu trúc CV
-            </div>
-            <span className="inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold text-indigo-700 bg-indigo-100 rounded-full">
-              {(document?.columns ?? []).reduce((sum, col) => sum + col.blocks.length, 0)} block
+        <aside className={styles.sidebar} aria-label="Các mục trong CV">
+          <div className={styles.templateSummary}>
+            <span className={styles.templateIcon}>
+              <LayoutTemplate size={22} />
             </span>
+            <div>
+              <small>MẪU ĐANG DÙNG</small>
+              <strong>{templateName}</strong>
+            </div>
+            <button type="button" onClick={() => setShowTemplates(true)}>
+              Đổi mẫu
+            </button>
           </div>
-
-          <div className="flex-1 overflow-y-auto p-3">
-            {(document?.columns ?? []).map((col, idx) => (
-              <div key={col.id} className="mb-4 last:mb-0">
-                {(document?.columns ?? []).length > 1 && (
-                  <div className="flex items-center justify-between px-1 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    <span>Cột {idx + 1}</span>
-                    <span className="opacity-60">{Math.round(col.width * 100)}%</span>
-                  </div>
-                )}
-                <BlockCanvas columnId={col.id} />
-              </div>
-            ))}
+          <div className={styles.sidebarHeading}>
+            <h2>Các mục trong CV</h2>
+            <span>{document.columns.reduce((sum, col) => sum + col.blocks.length, 0)} mục</span>
+          </div>
+          <p className={styles.sidebarHint}>
+            {document.layout === "freeform"
+              ? "Kéo hộp chữ đến vị trí bạn muốn. Nhấp đúp để sửa; kéo góc dưới để đổi kích thước."
+              : "Kéo để sắp xếp. Chọn một mục để chỉnh sửa trực tiếp trên CV."}
+          </p>
+          <div className={styles.sectionList}>
+            {document.layout === "freeform" ? (
+              <FreeformControls onSelectBlock={handleSelectBlock} />
+            ) : (
+              (document?.columns ?? []).map((col, idx) => (
+                <div key={col.id} className={styles.columnSection}>
+                  {(document?.columns ?? []).length > 1 && (
+                    <div className={styles.columnHeading}>
+                      <span>Cột {idx + 1}</span>
+                      <span>{Math.round(col.width * 100)}%</span>
+                    </div>
+                  )}
+                  <BlockCanvas columnId={col.id} onSelectBlock={handleSelectBlock} />
+                </div>
+              ))
+            )}
             {(document?.columns ?? []).length === 0 && (
-              <div className="flex flex-col items-center justify-center h-32 text-slate-400 dark:text-slate-500">
-                <p className="text-sm">Chưa có cột nào.</p>
-                <p className="text-xs mt-1">Hãy chọn Template để bắt đầu.</p>
+              <div className={styles.emptyState}>
+                <LayoutTemplate size={30} />
+                <p>Chọn một mẫu để bắt đầu CV của bạn.</p>
+                <button
+                  type="button"
+                  className={styles.secondaryButton}
+                  onClick={() => setShowTemplates(true)}
+                >
+                  Chọn mẫu CV
+                </button>
               </div>
             )}
           </div>
+          <p className={styles.sidebarFooter}>Thay đổi được lưu tự động sau khi chỉnh sửa.</p>
         </aside>
 
         {/* ── Center panel: editable CV preview ── */}
-        <main className="flex-1 overflow-y-auto print:overflow-visible bg-slate-50 dark:bg-slate-900 print:bg-white relative flex justify-center py-10 px-4 print:p-0 print:block editor-panel-center">
-          <CvPreview />
+        <main
+          className={`${styles.previewPanel} cv-editor-preview`}
+          aria-label="Chỉnh sửa và xem trước CV"
+        >
+          <div className={styles.previewToolbar}>
+            <div>
+              <span className={styles.previewDot} />
+              <strong>Chỉnh sửa trực tiếp</strong>
+              <span className={styles.paperSize}>A4 · 210 × 297 mm</span>
+            </div>
+            <label className={styles.zoomLabel}>
+              Thu phóng
+              <select value={zoom} onChange={(event) => setZoom(event.target.value)}>
+                <option value="fit">Vừa màn hình</option>
+                <option value="0.75">75%</option>
+                <option value="1">100%</option>
+                <option value="1.25">125%</option>
+              </select>
+            </label>
+          </div>
+          {exportError && (
+            <p role="alert" className={styles.exportError}>
+              {exportError}
+            </p>
+          )}
+          <div className={`${styles.previewScroll} cv-editor-scroll`}>
+            <div className={styles.editHint}>
+              <MousePointer2 size={14} />{" "}
+              {document.layout === "freeform"
+                ? "Kéo để đặt vị trí · Nhấp đúp để sửa chữ · Kéo góc dưới để đổi kích thước"
+                : "Nhấp vào nội dung trên CV để chỉnh sửa"}
+            </div>
+            <CvPreview zoom={zoom} />
+          </div>
         </main>
       </div>
       {showTemplates && <TemplatePicker onClose={() => setShowTemplates(false)} />}
