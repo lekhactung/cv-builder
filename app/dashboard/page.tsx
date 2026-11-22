@@ -66,6 +66,7 @@ export default async function DashboardPage() {
                 title={cv.title}
                 updatedAt={cv.updatedAt}
                 template={cv.template}
+                data={cv.data}
               />
             ))}
           </div>
