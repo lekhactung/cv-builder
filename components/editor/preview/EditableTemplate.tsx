@@ -4,6 +4,8 @@ import { useEditorStore } from "@/lib/stores/editorStore";
 import { Block, CvDocument } from "@/lib/schemas/block.schema";
 import { Plus, X } from "lucide-react";
 import AIEnhanceButton from "@/components/AIEnhanceButton";
+import CvPhoto from "../CvPhoto";
+import FreeformEditor from "../freeform/FreeformEditor";
 
 // ── Tiny ID helper ────────────────────────────────────────────
 const uid = () => crypto.randomUUID();
@@ -110,6 +112,7 @@ export default function EditableTemplate() {
     [updateBlock],
   );
 
+  if (document.layout === "freeform") return <FreeformEditor />;
   return (
     <div className="cv-dynamic flex-1 flex flex-col" style={cssVars}>
       <div className={`cv-columns flex-1 cv-layout-${document.layout}`}>
@@ -173,8 +176,15 @@ function EditableBlockRenderer({
   switch (block.type) {
     case "header":
       return (
-        <div className={`cv-header ${wrapCls}`} onClick={onSelect}>
-          {d.avatarUrl && <img src={d.avatarUrl} className="cv-avatar" alt="avatar" />}
+        <div id={`cv-block-${block.id}`} className={`cv-header ${wrapCls}`} onClick={onSelect}>
+          <CvPhoto
+            value={d.avatarUrl ?? ""}
+            position={d.avatarPosition}
+            onChange={(avatarUrl) =>
+              patch({ avatarUrl, ...(!avatarUrl ? { avatarPosition: undefined } : {}) })
+            }
+            onPositionChange={(avatarPosition) => patch({ avatarPosition })}
+          />
           <div>
             <E
               value={d.fullName}
@@ -201,7 +211,7 @@ function EditableBlockRenderer({
 
     case "text":
       return (
-        <div className={`cv-section ${wrapCls}`} onClick={onSelect}>
+        <div id={`cv-block-${block.id}`} className={`cv-section ${wrapCls}`} onClick={onSelect}>
           {block.label && (
             <SectionTitle blockId={block.id} columnId={columnId} label={block.label} />
           )}
@@ -229,6 +239,7 @@ function EditableBlockRenderer({
     case "timeline":
       return (
         <div
+          id={`cv-block-${block.id}`}
           className={`cv-section ${wrapCls} text-center [&_.cv-section-title]:text-center`}
           onClick={onSelect}
         >
@@ -325,7 +336,7 @@ function EditableBlockRenderer({
 
     case "skills":
       return (
-        <div className={`cv-section ${wrapCls}`} onClick={onSelect}>
+        <div id={`cv-block-${block.id}`} className={`cv-section ${wrapCls}`} onClick={onSelect}>
           <SectionTitle
             blockId={block.id}
             columnId={columnId}
@@ -384,7 +395,7 @@ function EditableBlockRenderer({
 
     case "tags":
       return (
-        <div className={`cv-section ${wrapCls}`} onClick={onSelect}>
+        <div id={`cv-block-${block.id}`} className={`cv-section ${wrapCls}`} onClick={onSelect}>
           <SectionTitle
             blockId={block.id}
             columnId={columnId}
@@ -431,7 +442,7 @@ function EditableBlockRenderer({
 
     case "links":
       return (
-        <div className={`cv-section ${wrapCls}`} onClick={onSelect}>
+        <div id={`cv-block-${block.id}`} className={`cv-section ${wrapCls}`} onClick={onSelect}>
           {block.label && (
             <SectionTitle blockId={block.id} columnId={columnId} label={block.label} />
           )}
@@ -473,9 +484,11 @@ function EditableBlockRenderer({
       );
 
     case "divider":
-      return <hr className="cv-divider" style={{ borderStyle: d.style }} />;
+      return (
+        <hr id={`cv-block-${block.id}`} className="cv-divider" style={{ borderStyle: d.style }} />
+      );
     case "spacer":
-      return <div style={{ height: d.height ?? 16 }} />;
+      return <div id={`cv-block-${block.id}`} style={{ height: d.height ?? 16 }} />;
     default:
       return null;
   }
