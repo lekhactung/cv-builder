@@ -31,7 +31,6 @@ export function SortableItem({ id, children, showHandle }: Props) {
           {...attributes}
           {...listeners}
           aria-label="Kéo để sắp xếp"
-          tabIndex={-1}
           type="button"
           style={{ touchAction: "none" }}
         >
