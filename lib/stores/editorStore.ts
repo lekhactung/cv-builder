@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { CvDocument, Block, Column } from "../schemas/block.schema";
+import { CvDocument, Block } from "../schemas/block.schema";
+import { applyFreeformFrames, type FrameUpdates } from "../freeform-alignment";
 
 const MAX_HISTORY = 50;
 
@@ -17,6 +18,9 @@ interface EditorState {
 
   selectedBlockId: string | null;
   selectedColumnId: string | null;
+  selectedBlockIds: string[];
+  freeformSnap: boolean;
+  freeformMargins: boolean;
 
   past: CvDocument[];
   future: CvDocument[];
@@ -29,6 +33,10 @@ interface EditorState {
   setSaveError: (error: string | null) => void;
   setLastSavedAt: (date: Date | null) => void;
   selectBlock: (blockId: string | null, columnId?: string | null) => void;
+  selectFreeformBlock: (blockId: string, columnId: string, additive?: boolean) => void;
+  setFreeformSnap: (enabled: boolean) => void;
+  setFreeformMargins: (enabled: boolean) => void;
+  updateFrames: (updates: FrameUpdates) => void;
 
   updateDocument: (updater: (doc: CvDocument) => CvDocument) => void;
 
@@ -80,6 +88,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
   selectedBlockId: null,
   selectedColumnId: null,
+  selectedBlockIds: [],
+  freeformSnap: true,
+  freeformMargins: true,
   past: [],
   future: [],
 
@@ -91,11 +102,32 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   setSaveError: (saveError) => set({ saveError }),
   setLastSavedAt: (lastSavedAt) => set({ lastSavedAt }),
   selectBlock: (blockId, columnId = null) =>
-    set({ selectedBlockId: blockId, selectedColumnId: columnId }),
+    set({
+      selectedBlockId: blockId,
+      selectedColumnId: columnId,
+      selectedBlockIds: blockId ? [blockId] : [],
+    }),
+  selectFreeformBlock: (blockId, columnId, additive = false) => {
+    const previous = get().selectedBlockIds;
+    const ids = additive
+      ? previous.includes(blockId)
+        ? previous.filter((id) => id !== blockId)
+        : [...previous, blockId]
+      : [blockId];
+    set({
+      selectedBlockIds: ids,
+      selectedBlockId: ids.includes(blockId) ? blockId : (ids.at(-1) ?? null),
+      selectedColumnId: ids.length ? columnId : null,
+    });
+  },
+  setFreeformSnap: (freeformSnap) => set({ freeformSnap }),
+  setFreeformMargins: (freeformMargins) => set({ freeformMargins }),
+  updateFrames: (updates) => get().updateDocument((doc) => applyFreeformFrames(doc, updates)),
 
   updateDocument: (updater) => {
     const { document, past } = get();
     const next = updater(document);
+    if (next === document) return;
     set({
       document: next,
       saved: false,
@@ -214,6 +246,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       past: [],
       future: [],
       saved: true,
+      saving: false,
+      saveError: null,
+      lastSavedAt: null,
+      selectedBlockId: null,
+      selectedColumnId: null,
+      selectedBlockIds: [],
     });
   },
 }));
